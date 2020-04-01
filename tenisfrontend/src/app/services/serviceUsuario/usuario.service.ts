@@ -3,6 +3,8 @@ import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import { Ambiente } from '../ambiente';
 import { Modelusuario } from 'src/app/models/modelUsusario/modelusuario';
+import { Modellogin } from 'src/app/models/modelLogin/modellogin';
+import { Modelregister } from 'src/app/models/modelRegister/modelregister';
 
 @Injectable({
   providedIn: 'root'
@@ -14,12 +16,12 @@ export class UsuarioService {
     this.ambiente = new Ambiente();
   }
 
-  login(usuario: Modelusuario)  {
-    return this.http.post(this.ambiente.urlUsuario + '/login', usuario);
+  login(login: Modellogin)  {
+    return this.http.post(this.ambiente.urlUsuario + '/login', login);
    }
 
-  registrar(usuario: Modelusuario) {
-    return this.http.post(this.ambiente.urlUsuario + '/register', usuario);
+  registrar(register: Modelregister) { 
+    return this.http.post(this.ambiente.urlUsuario + '/register', register);
   }
 
 }

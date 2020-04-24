@@ -6,7 +6,7 @@ Podrás encontrar eventos y personas cerca de tu ubicación o según tus prefere
 en partidos amistosos o torneos organizados por clubs y otros organizadores. 
 
 
-## Instrucciones
+## INSTRUCCIONES
 Instalaremos el paquete typescript
 npm install typescript -s
 
@@ -41,7 +41,7 @@ A la hora de poner un estudiante en una asignatura, tengo que poner el id de la 
 Cuando lo suba a git, el node_modules lo tengo que meter en la carpeta gitignore. Pero si quiero hacer que funcione el programa lo saco
 
 
-## Pasos a seguir desde 0
+## PASOS A SEGUIR DESDE 0
 npm init --> desde el cmd
 aqui le pondre el nombre que quiero y el resto por defecto
 

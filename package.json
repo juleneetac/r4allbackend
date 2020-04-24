@@ -1,15 +1,16 @@
 {
-  "name": "api-rest",
+  "name": "r4all-backend",
   "version": "1.0.0",
-  "description": "API REST minimo1 EA",
+  "description": "Rackets4ALL Backend",
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly index.ts",
+    "nodemon": "nodemon",
     "prod": "tsc && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Julen G",
+  "author": "G2 EA",
   "license": "ISC",
   "dependencies": {
     "@types/cors": "^2.8.6",
@@ -20,9 +21,13 @@
     "express": "^4.17.1",
     "mongodb": "^3.3.3",
     "mongoose": "^5.9.4",
+    "morgan": "^1.10.0",
     "ts-node-dev": "^1.0.0-pre.44"
   },
   "devDependencies": {
+    "@types/morgan": "^1.9.0",
+    "nodemon": "^2.0.3",
+    "ts-node": "^8.9.0",
     "typescript": "^3.8.3"
   }
 }

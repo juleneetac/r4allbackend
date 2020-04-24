@@ -7,8 +7,6 @@ import cors = require("cors");
 import bodyParser = require('body-parser');
 
 //Import routes
-let studentsRouter = require("./routes/StudentsRoutes"); //variable con la ruta students
-let subjectsRouter = require("./routes/SubjectsRoutes"); //variable con la ruta subjects
 let usuariosRouter = require("./routes/UsuariosRoutes"); //variable con la ruta usuarios
 let torneosRouter = require("./routes/TorneosRoutes"); //variable con la ruta torneos
 let partidasRouter = require("./routes/PartidasRoutes"); //variable con la ruta partidas
@@ -21,8 +19,6 @@ let app = express();
 app.use(cors());
 app.use(bodyParser.json()); //para poder enviar json con el POST
 
-app.use('/estudiantes', studentsRouter);   //students
-app.use('/asignaturas', subjectsRouter);   //subjects
 app.use('/usr', usuariosRouter);   //students
 app.use('/trn', torneosRouter);   //subjects
 app.use('/prd', partidasRouter);   //students

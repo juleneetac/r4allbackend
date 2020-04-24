@@ -16,10 +16,5 @@ let usuarios = new Schema({
     torneos: [{ type: mongoose.Types.ObjectId, ref: 'torneos' }], //referencia con la colección de torneos
     chats: [{ type: mongoose.Types.ObjectId, ref: 'chats' }], //referencia con la colección de chats
     amigos: [{ type: mongoose.Types.ObjectId, ref: 'usuarios' }] //referencia con la colección de usuarios
-    // phones: [{
-    //         home: String,
-    //         work: String
-    //     }],
-    // studies: [String]
 });
 module.exports = mongoose.model('usuarios', usuarios); //la coleccion se llamara usuarios

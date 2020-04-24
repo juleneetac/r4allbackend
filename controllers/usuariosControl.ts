@@ -75,16 +75,21 @@ exports.login = async function (req, res){ //logearse un usuario si la contrase√
     }
 
 exports.getUsuario = async function (req, res){ //me da datos de un user especifico
-    let my_id = req.params.usuarioId;
-    let user = await UsuariosSchema.findById(my_id);
-    if(user) {
-        res.status(200).json(user);
-    } else {
-        res.status(424).send({message: 'User not found'});
+    try{
+        let my_id = req.params.usuarioId;
+        let user = await UsuariosSchema.findById(my_id);
+        if(user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).send({message: 'User not found'});
+        }
+    }
+    catch (err) {
+        res.status(500).send(err)
     }
 };
 
-exports.getUsuarios = async function (req, res){   //me da el nombre de todas los usuarios
+/* exports.getUsuarios = async function (req, res){   //me da el nombre de todas los usuarios
     let user = await UsuariosSchema.find().select('username');
     console.log(user);
     if(user) {
@@ -92,7 +97,22 @@ exports.getUsuarios = async function (req, res){   //me da el nombre de todas lo
     } else {
         res.status(424).send({message: 'user error'});
     }
-};
+}; */
+
+exports.getUsuarios = async function (req, res){
+    try{
+        let { ubicacion, radio, sexo, edad, exp, valoracion} = req.body;
+        //let usuarios = await UsuariosSchema.find({"sexo": sexo, })    //Buscar por filtros del JSON
+        let usuarios = await UsuariosSchema.find();      
+        if(usuarios)
+            res.status(200).json(usuarios);
+        else 
+            res.status(404).json("No Users found with those filters");
+    }
+    catch (err) {
+        res.status(500).send(err)
+    }
+}
 
 exports.getPartidasde  = async function(req, res){
     let my_id = req.params.usuarioId;  //el req.params crea un parametro
@@ -103,7 +123,7 @@ exports.getPartidasde  = async function(req, res){
     if(partida) {
         res.status(200).json(partida);
     } else {
-        res.status(424).send({message: 'Error buscando partidas'});
+        res.status(404).send({message: 'Error buscando partidas'});
     }
 };
 
@@ -115,7 +135,7 @@ exports.getTorneosde  = async function(req, res){ //me da los torneos de un juga
     if(torneo) {
         res.status(200).json(torneo);
     } else {
-        res.status(424).send({message: 'Error buscando torneos'});
+        res.status(404).send({message: 'Error buscando torneos'});
     }
 };
 
@@ -127,7 +147,7 @@ exports.getChatsde  = async function(req, res){  //me da los chats de un jugador
     if(chat) {
         res.status(200).json(chat);
     } else {
-        res.status(424).send({message: 'Error de chat'});
+        res.status(404).send({message: 'Error de chat'});
     }
 };
 
@@ -140,7 +160,7 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
         res.status(200).json(amigo);
     } 
     else {
-        res.status(424).send({message: 'Error al ver tus amigos'});
+        res.status(404).send({message: 'Error al ver tus amigos'});
     }
 };
 

@@ -11,8 +11,5 @@ router.route('/newprofile')
 router.route('/update/:id')
     .put(multer.single('image'), updatePerfil);
 
-router.route('/usr/getusr/:id')
-    .get();
-
    
 module.exports = router;

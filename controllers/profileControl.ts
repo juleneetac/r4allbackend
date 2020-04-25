@@ -1,9 +1,8 @@
 'use strict';
 
 import {Request, Response} from 'express';
-import UsuariosSchema from '../models/Usuarios';
+
 import Perfil from '../models/Profile';
-import Iusuarios from '../models/Usuarios';
 
 const schema = require ('../models/Profile');
 
@@ -17,13 +16,32 @@ let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
 
 
-export async function updatePerfil(req:Request, res:Response){
+export async function updatePerfil(req:Request, res:Response): Promise<Response>{
 
     const {id} = req.params;
-    const {username, mail, password, sexo, rutaimagen, ubicacion, edad, exp} = req.body;
+    const {username,mail,password, sexo, rutaimagen, ubicacion, edad, exp, valoracion, 
+        partidas, torneos, chats, amigos} = req.body;
+    console.log(req.body);
+    const update = await Perfil.findByIdAndUpdate(id,{
+        username,
+        mail,
+        password,
+        sexo,
+        rutaimagen,
+        ubicacion,
+        edad,
+        exp,
+        valoracion,
+        partidas,
+        torneos,
+        chats,
+        amigos
+    });
 
-    const update = await UsuariosSchema
-
+    return res.json({
+        message: 'Success',
+        update
+    })
 }
 
 

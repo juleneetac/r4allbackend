@@ -2,6 +2,8 @@
 export{};
 
 
+import Perfil from '../models/Profile';
+
 let UsuariosSchema = require('../models/Usuarios');
 let TorneosSchema = require('../models/Torneos');
 let PartidasSchema = require('../models/Partidas');
@@ -14,15 +16,16 @@ import {Request, Response} from 'express';
 
 
 exports.registrar = async function (req, res){  //registrarse un usuario si el usuario ya existe da error
-    let usuario = req.body;
+    const usuario = req.body;
+    const rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
     console.log("username "+usuario.username)
     console.log("Mail "+ usuario.mail)
     console.log("password "+usuario.password)
     console.log("edad "+usuario.edad)
     console.log("sexo "+usuario.sexo)
-    console.log("rutaimagen "+usuario.rutaimagen)
+    console.log("rutaimagen"+rutaimagen)
     console.log("ubicacion "+usuario.ubicacion)
-    let user = new UsuariosSchema()
+    const user = new UsuariosSchema()
     console.log(user)
     let foundUsername = await UsuariosSchema.findOne({username:usuario.username});
     let foundMail = await UsuariosSchema.findOne({mail:usuario.mail});
@@ -42,7 +45,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             user.password = usuario.password
             user.edad = usuario.edad
             user.sexo = usuario.sexo
-            user.imagen = usuario.rutaimagen
+            user.rutaimagen = rutaimagen
             user.ubicacion = usuario.ubicacion
             await user.save();
             return res.status(201).send({message: "Usuario created successfully"}) 
@@ -163,3 +166,37 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
         res.status(500).send(err)
     }
 };
+
+
+export async function updatePerfil(req:Request, res:Response): Promise<Response>{
+
+    const {id} = req.params;
+    console.log(id);
+    const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, 
+        partidas, torneos, chats, amigos} = req.body;
+    const rutaimagen = req.file.path;
+    console.log(rutaimagen);
+    console.log(req.body);
+    const update = await UsuariosSchema.findByIdAndUpdate(id,{
+        username,
+        mail,
+        password,
+        sexo,
+        rutaimagen,
+        ubicacion,
+        edad,
+        exp,
+        valoracion,
+        partidas,
+        torneos,
+        chats,
+        amigos
+    }, {new: true});
+
+    return res.json({
+        message: 'Success',
+        update
+    })
+}
+
+

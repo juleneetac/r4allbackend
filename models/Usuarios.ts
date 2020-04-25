@@ -1,8 +1,9 @@
 'use strict';
-import {model, Document} from 'mongoose';
+import {Schema,model, Document} from 'mongoose';
 
 import mongoose = require("mongoose");
-let Schema = mongoose.Schema;
+
+
 let usuarios = new Schema({
     username: String,
     mail: String,     //cambiar las funciones de register o login para usar con el mail
@@ -41,7 +42,7 @@ interface Iusuarios extends Document {
     amigos: [{ type: mongoose.Types.ObjectId, ref: 'usuarios' }]
 }
 
-export default model <Iusuarios>('usuarios',usuarios);
-
+/* export default model <Iusuarios>('usuarios',usuarios); 
+ */
 module.exports = mongoose.model('usuarios', usuarios); //la coleccion se llamara usuarios
 

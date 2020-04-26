@@ -19,6 +19,9 @@ router.get('/gettornbyuser/:usuarioId', usuariosControl.getTorneosde);  // me da
 router.get('/getchatbyuser/:usuarioId', usuariosControl.getChatsde); // me da los chats de un user
 router.get('/getamigbyuser/:usuarioId', usuariosControl.getAmigosde); // me da los amigos de un user
 
+router.route('/getidofuser/:username')
+    .get(usuariosControl.getidofuser);
+
 //put
 router.route('/update/:id')
     .put(multer.single('rutaimagen'), updatePerfil);

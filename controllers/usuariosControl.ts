@@ -199,4 +199,19 @@ export async function updatePerfil(req:Request, res:Response): Promise<Response>
     })
 }
 
+export async function getidofuser (req:Request, res:Response){
+    const username = req.params.username;
+    const usuario = await UsuariosSchema.findOne({username: username})
+    console.log(usuario);
+    if (username){
+    res.status(200).json(usuario._id);
+    }
+
+    else {
+    res.status(424).send('Not found');
+    }
+}
+
+
+
 

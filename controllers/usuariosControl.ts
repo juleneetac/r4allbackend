@@ -42,7 +42,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             user.exp = 0
             user.valoracion = 0
             await user.save();
-            return res.status(201).send({message: "Usuario created successfully"}) 
+            return res.status(201).send(user);
         } 
         catch (err) {
             res.status(500).send(err);
@@ -56,17 +56,17 @@ exports.login = async function (req, res){ //logearse un usuario si la contrase�
     try {
         console.log("username body: " +usuario.username)
         console.log("contraseña body :" +usuario.password)
-        let username = await UsuariosSchema.findOne({ username: usuario.username })   
+        let loggeduser = await UsuariosSchema.findOne({ username: usuario.username })   
         console.log("Se intenta logear el usuario "+usuario.username) //el que escribo ahora no el que ya tengo en la db
 
-        if (!username) {
+        if (!loggeduser) {
           return res.status(404).send({message: 'Usuario no encontrado'})
 
-        } else if (username.length === 0 ) {
+        } else if (loggeduser.username.length === 0 ) {
           return res.status(401).send({message: 'Inserta en el campo username'})
         }  
-        if(username.password === usuario.password){ //la primera contraseña es como se llama en la db y la segunda la del json
-          res.status(200).send({message: "Usuario logeado correctamente"})
+        if(loggeduser.password === usuario.password){ //la primera contraseña es como se llama en la db y la segunda la del json
+          res.status(200).send(loggeduser);
         }
         else {
           res.status(402).send({message: 'Incorrect password'})

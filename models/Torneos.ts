@@ -3,8 +3,10 @@
 import mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 let torneos = new Schema({
-    deporte: String,
-    di: String,   // soble o individual
+    //deporte: String,
+    modo: String,           //Individuales o Dobles
+    pistacubierta: Boolean, //Cubierta o no
+    tipopista: String,      //Césped, TierraBatida, etc.
     ubicacion: String,
     ganador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },
     organizador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },

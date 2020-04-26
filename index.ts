@@ -5,6 +5,7 @@ import express = require("express");
 import mongoose = require("mongoose");
 import cors = require("cors");
 import bodyParser = require('body-parser');
+import morgan = require("morgan");
 
 //Import routes
 let usuariosRouter = require("./routes/UsuariosRoutes"); //variable con la ruta usuarios
@@ -16,6 +17,7 @@ let chatsRouter = require("./routes/ChatsRoutes"); //variable con la ruta chats
 
 //Server variable initialization
 let app = express();
+app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.json()); //para poder enviar json con el POST
 
@@ -31,7 +33,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/r4all", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(function () {
-    console.log('Conexion con db OK');
+    console.log('Mongodb connection OK\n');
 }).catch(function (err) {
     console.log("Database error: " + err.message);
 });

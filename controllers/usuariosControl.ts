@@ -39,15 +39,17 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             user.edad = usuario.edad
             user.sexo = usuario.sexo
             user.ubicacion = usuario.ubicacion
+            user.exp = 0
+            user.valoracion = 0
             await user.save();
             return res.status(201).send({message: "Usuario created successfully"}) 
-            } 
+        } 
         catch (err) {
             res.status(500).send(err);
             console.log(err);
-            }
         }
     }
+}
 
 exports.login = async function (req, res){ //logearse un usuario si la contraseña no coincide da error
     let usuario = req.body;
@@ -71,6 +73,7 @@ exports.login = async function (req, res){ //logearse un usuario si la contrase�
         }
       }catch (err) {
        res.status(500).send(err)
+       console.log(err);
       }
     }
 
@@ -86,31 +89,61 @@ exports.getUsuario = async function (req, res){ //me da datos de un user especif
     }
     catch (err) {
         res.status(500).send(err)
+        console.log(err);
     }
 };
 
-/* exports.getUsuarios = async function (req, res){   //me da el nombre de todas los usuarios
-    let user = await UsuariosSchema.find().select('username');
-    console.log(user);
-    if(user) {
-        res.status(200).json(user);
-    } else {
-        res.status(424).send({message: 'user error'});
-    }
-}; */
-
 exports.getUsuarios = async function (req, res){
     try{
-        let { ubicacion, radio, sexo, edad, exp, valoracion} = req.body;
-        //let usuarios = await UsuariosSchema.find({"sexo": sexo, })    //Buscar por filtros del JSON
-        let usuarios = await UsuariosSchema.find();      
+        //Buscar lista general o por filtros en el JSON
+        let { flags, ubicacion, radio, sexo, edad, exp, valoracion } = req.body;        
+        
+        
+        //case flags = [true,true,3,3,3]
+        let usuarios = await UsuariosSchema.find({
+            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            "sexo": sexo,
+            "edad": {$gte: edad[0], $lte: edad[1]},
+            "exp": {$gte: exp[0], $lte: exp[1]},
+            "valoracion": {$gte: valoracion[0], $lte: valoracion[1]}
+        });
+
+        //------------------------------------ BUSCAR SEGÚN LOS FLAGS: QUEDA PENDIENTE ---------------------------------------//
+        /*switch(flags[0]){
+            case true: //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            case false: usuarios = await usuarios.find();
+        }
+        switch(flags[1]){
+            case true: usuarios = await usuarios.find({'sexo': req.body.sexo});
+            case false: usuarios = await usuarios.find();
+        }
+        switch(flags[2]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.edad.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max, $gt: req.body.edad.min}});
+        }
+        switch(flags[2]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.exp.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max, $gt: req.body.exp.min}});
+        }
+        switch(flags[3]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.valoracion.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max, $gt: req.body.valoracion.min}});
+        } */
+        
         if(usuarios)
             res.status(200).json(usuarios);
         else 
-            res.status(404).json("No Users found with those filters");
+            res.status(404).json("No se han encontrado Usuarios con los parámetros seleccionados");
     }
     catch (err) {
         res.status(500).send(err)
+        console.log(err);
     }
 }
 
@@ -176,5 +209,6 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
     }
     catch(err){
         res.status(500).send(err)
+        console.log(err);
     }
 };

@@ -10,7 +10,7 @@ let usuarios = new Schema({
     rutaimagen: String,
     ubicacion: String,
     edad: Number,
-    exp: String,
+    exp: Number,
     valoracion: Number,
     partidas: [{ type: mongoose.Types.ObjectId, ref: 'partidas' }], //referencia con la colección de partidas
     torneos: [{ type: mongoose.Types.ObjectId, ref: 'torneos' }], //referencia con la colección de torneos

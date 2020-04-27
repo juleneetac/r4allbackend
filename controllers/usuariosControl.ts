@@ -1,7 +1,6 @@
 'use strict';
 export{};
 
-
 let UsuariosSchema = require('../models/Usuarios');
 let TorneosSchema = require('../models/Torneos');
 let PartidasSchema = require('../models/Partidas');
@@ -10,13 +9,18 @@ let MensajesSchema = require('../models/Mensajes');
 let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
 
+import Perfil from '../models/Profile';
+let avatar = '../uploads/user.png';
+
 exports.registrar = async function (req, res){  //registrarse un usuario si el usuario ya existe da error
     let usuario = req.body;
+    const rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
     console.log("username "+usuario.username)
     console.log("Mail "+ usuario.mail)
     console.log("password "+usuario.password)
     console.log("edad "+usuario.edad)
     console.log("sexo "+usuario.sexo)
+    console.log("rutaimagen"+rutaimagen)
     console.log("ubicacion "+usuario.ubicacion)
     let user = new UsuariosSchema()
     console.log(user)
@@ -38,61 +42,115 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             user.password = usuario.password
             user.edad = usuario.edad
             user.sexo = usuario.sexo
+            user.rutaimagen = rutaimagen
             user.ubicacion = usuario.ubicacion
+            user.exp = 0
+            user.valoracion = 0
             await user.save();
-            return res.status(201).send({message: "Usuario created successfully"}) 
-            } 
+            return res.status(201).send(user);
+        } 
         catch (err) {
             res.status(500).send(err);
             console.log(err);
-            }
         }
     }
+}
 
 exports.login = async function (req, res){ //logearse un usuario si la contraseña no coincide da error
     let usuario = req.body;
     try {
         console.log("username body: " +usuario.username)
         console.log("contraseña body :" +usuario.password)
-        let username = await UsuariosSchema.findOne({ username: usuario.username })   
+        let loggeduser = await UsuariosSchema.findOne({ username: usuario.username })   
         console.log("Se intenta logear el usuario "+usuario.username) //el que escribo ahora no el que ya tengo en la db
 
-        if (!username) {
+        if (!loggeduser) {
           return res.status(404).send({message: 'Usuario no encontrado'})
 
-        } else if (username.length === 0 ) {
+        } else if (loggeduser.username.length === 0 ) {
           return res.status(401).send({message: 'Inserta en el campo username'})
         }  
-        if(username.password === usuario.password){ //la primera contraseña es como se llama en la db y la segunda la del json
-          res.status(200).send({message: "Usuario logeado correctamente"})
+        if(loggeduser.password === usuario.password){ //la primera contraseña es como se llama en la db y la segunda la del json
+          res.status(200).send(loggeduser);
         }
         else {
           res.status(402).send({message: 'Incorrect password'})
         }
       }catch (err) {
        res.status(500).send(err)
+       console.log(err);
       }
     }
 
 exports.getUsuario = async function (req, res){ //me da datos de un user especifico
-    let my_id = req.params.usuarioId;
-    let user = await UsuariosSchema.findById(my_id);
-    if(user) {
-        res.status(200).json(user);
-    } else {
-        res.status(424).send({message: 'User not found'});
+    try{
+        let my_id = req.params.usuarioId;
+        let user = await UsuariosSchema.findById(my_id);
+        if(user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).send({message: 'User not found'});
+        }
+    }
+    catch (err) {
+        res.status(500).send(err)
+        console.log(err);
     }
 };
 
-exports.getUsuarios = async function (req, res){   //me da el nombre de todas los usuarios
-    let user = await UsuariosSchema.find().select('username');
-    console.log(user);
-    if(user) {
-        res.status(200).json(user);
-    } else {
-        res.status(424).send({message: 'user error'});
+exports.getUsuarios = async function (req, res){
+    try{
+        //Buscar lista general o por filtros en el JSON
+        let { flags, ubicacion, radio, sexo, edad, exp, valoracion } = req.body;        
+        
+        
+        //case flags = [true,true,3,3,3]
+        let usuarios = await UsuariosSchema.find({
+            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            "sexo": sexo,
+            "edad": {$gte: edad[0], $lte: edad[1]},
+            "exp": {$gte: exp[0], $lte: exp[1]},
+            "valoracion": {$gte: valoracion[0], $lte: valoracion[1]}
+        });
+
+        //------------------------------------ BUSCAR SEGÚN LOS FLAGS: QUEDA PENDIENTE ---------------------------------------//
+        /*switch(flags[0]){
+            case true: //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            case false: usuarios = await usuarios.find();
+        }
+        switch(flags[1]){
+            case true: usuarios = await usuarios.find({'sexo': req.body.sexo});
+            case false: usuarios = await usuarios.find();
+        }
+        switch(flags[2]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.edad.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max, $gt: req.body.edad.min}});
+        }
+        switch(flags[2]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.exp.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max, $gt: req.body.exp.min}});
+        }
+        switch(flags[3]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.valoracion.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max, $gt: req.body.valoracion.min}});
+        } */
+        
+        if(usuarios)
+            res.status(200).json(usuarios);
+        else 
+            res.status(404).json("No se han encontrado Usuarios con los parámetros seleccionados");
     }
-};
+    catch (err) {
+        res.status(500).send(err)
+        console.log(err);
+    }
+}
 
 exports.getPartidasde  = async function(req, res){
     let my_id = req.params.usuarioId;  //el req.params crea un parametro
@@ -103,7 +161,7 @@ exports.getPartidasde  = async function(req, res){
     if(partida) {
         res.status(200).json(partida);
     } else {
-        res.status(424).send({message: 'Error buscando partidas'});
+        res.status(404).send({message: 'Error buscando partidas'});
     }
 };
 
@@ -115,7 +173,7 @@ exports.getTorneosde  = async function(req, res){ //me da los torneos de un juga
     if(torneo) {
         res.status(200).json(torneo);
     } else {
-        res.status(424).send({message: 'Error buscando torneos'});
+        res.status(404).send({message: 'Error buscando torneos'});
     }
 };
 
@@ -127,7 +185,7 @@ exports.getChatsde  = async function(req, res){  //me da los chats de un jugador
     if(chat) {
         res.status(200).json(chat);
     } else {
-        res.status(424).send({message: 'Error de chat'});
+        res.status(404).send({message: 'Error de chat'});
     }
 };
 
@@ -140,7 +198,7 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
         res.status(200).json(amigo);
     } 
     else {
-        res.status(424).send({message: 'Error al ver tus amigos'});
+        res.status(404).send({message: 'Error al ver tus amigos'});
     }
 };
 
@@ -156,5 +214,58 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
     }
     catch(err){
         res.status(500).send(err)
+        console.log(err);
+    }
+};
+
+
+//
+exports.updatePerfil = async function (req,res){
+    try{
+        const {id} = req.params.usuarioId;
+        console.log(id);
+        const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, 
+            partidas, torneos, chats, amigos} = req.body;
+        const rutaimagen = req.file.path;
+        console.log(rutaimagen);
+        console.log(req.body);
+        const update = await UsuariosSchema.findByIdAndUpdate(id,{
+            username,
+            mail,
+            password,
+            sexo,
+            rutaimagen,
+            ubicacion,
+            edad,
+            exp,
+            valoracion,
+            partidas,
+            torneos,
+            chats,
+            amigos
+        }, {new: true});
+    
+        return res.json({
+            message: 'Success',
+            update
+        })
+    }
+    catch(err){
+
+    }
+
+
+};
+
+exports.getidofuser = async function (req,res){
+    const username = req.params.username;
+    const usuario = await UsuariosSchema.findOne({username: username})
+    console.log(usuario);
+    if (username){
+    res.status(200).json(usuario._id);
+    }
+
+    else {
+    res.status(424).send('Not found');
     }
 };

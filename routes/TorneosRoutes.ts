@@ -4,16 +4,19 @@ import express = require("express");
 let router = express.Router();
 let torneosControl = require('../controllers/torneosControl');  //torneos
 
-// post
-router.post('/addtrn', torneosControl.addTorneo);  // añade un torneo
+//POST
+router.post('/addtrn', torneosControl.addTorneo);   // añade un torneo
+router.post('/gettrns', torneosControl.getTorneos); //Devuelve la lista de Torneos según los filtros del JSON
+router.post('/addpartic', torneosControl.addParticipante)
 
-//get
+//GET
 router.get('/gettrn/:torneoId', torneosControl.getTorneo);  //me da todos los datos de un torneo especifico
-router.get('/gettrns', torneosControl.getTorneos);  // me da todos los torneos
 router.get('/getparticbytrn', torneosControl.getParticipantesde);  //me da los participantes de un torneo
 
-//put
+//PUT
+router.put('/updatetrn', torneosControl.editTorneo);    //Editar o Actualizar un Torneo
 
-//delete
+//DELETE
+router.delete('/deletetrn', torneosControl.deleteTorneo);   //Eliminar un Torneo
 
 module.exports = router;

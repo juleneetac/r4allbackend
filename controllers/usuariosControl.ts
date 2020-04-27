@@ -9,6 +9,7 @@ let MensajesSchema = require('../models/Mensajes');
 let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
 
+//
 import Perfil from '../models/Profile';
 let avatar = '../uploads/user.png';
 
@@ -54,7 +55,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             console.log(err);
         }
     }
-}
+};
 
 exports.login = async function (req, res){ //logearse un usuario si la contrase√±a no coincide da error
     let usuario = req.body;
@@ -76,11 +77,26 @@ exports.login = async function (req, res){ //logearse un usuario si la contrase√
         else {
           res.status(402).send({message: 'Incorrect password'})
         }
-      }catch (err) {
+    }
+    catch (err) {
        res.status(500).send(err)
        console.log(err);
-      }
     }
+};
+
+//-----PROVISIONAL HASTA QUE GUARDEMOS EL USUARIO EN EL LOCAL STORAGE DEL FRONTEND-----//
+exports.getidofuser = async function (req,res){
+    const username = req.params.username;
+    const usuario = await UsuariosSchema.findOne({username: username})
+    console.log(usuario);
+    if (username){
+    res.status(200).json(usuario._id);
+    }
+
+    else {
+    res.status(404).send({message: 'Not Found'});
+    }
+};
 
 exports.getUsuario = async function (req, res){ //me da datos de un user especifico
     try{
@@ -202,34 +218,16 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
     }
 };
 
-exports.deleteUsuario = async function (req, res) { //borro el usuario que le paso con id
-    try{
-        let my_id = req.params.usuarioId;
-        let user = await UsuariosSchema.findByIdAndRemove(my_id);
-        if(!user){
-            return res.status(404).send({message: 'user not found'})
-        }else{
-            res.status(200).send({message:'User deleted successfully'})
-        }
-    }
-    catch(err){
-        res.status(500).send(err)
-        console.log(err);
-    }
-};
-
-
-//
-exports.updatePerfil = async function (req,res){
+exports.updateUsuario = async function (req,res){
     try{
         const {id} = req.params.usuarioId;
         console.log(id);
-        const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, 
-            partidas, torneos, chats, amigos} = req.body;
+        const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, partidas, torneos, chats, amigos} = req.body;
+        console.log(req.body);
         const rutaimagen = req.file.path;
         console.log(rutaimagen);
         console.log(req.body);
-        const update = await UsuariosSchema.findByIdAndUpdate(id,{
+        const usuarioEditado = await UsuariosSchema.findByIdAndUpdate(id,{
             username,
             mail,
             password,
@@ -244,28 +242,26 @@ exports.updatePerfil = async function (req,res){
             chats,
             amigos
         }, {new: true});
-    
-        return res.json({
-            message: 'Success',
-            update
-        })
+        res.status(201).json({usuarioEditado});
     }
     catch(err){
-
+        res.status(500).send(err)
+        console.log(err);
     }
-
-
 };
 
-exports.getidofuser = async function (req,res){
-    const username = req.params.username;
-    const usuario = await UsuariosSchema.findOne({username: username})
-    console.log(usuario);
-    if (username){
-    res.status(200).json(usuario._id);
+exports.deleteUsuario = async function (req, res) { //borro el usuario que le paso con id
+    try{
+        let my_id = req.params.usuarioId;
+        let user = await UsuariosSchema.findByIdAndRemove(my_id);
+        if(!user){
+            return res.status(404).send({message: 'user not found'})
+        }else{
+            res.status(200).send({message:'User deleted successfully'})
+        }
     }
-
-    else {
-    res.status(424).send('Not found');
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
     }
 };

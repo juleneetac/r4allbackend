@@ -20,16 +20,11 @@ router.get('/getchatbyuser/:usuarioId', usuariosControl.getChatsde); // me da lo
 router.get('/getamigbyuser/:usuarioId', usuariosControl.getAmigosde); // me da los amigos de un user
 
 //
-router.route('/getidofuser/:username')
-    .get(usuariosControl.getidofuser);
+router.get('/getidofuser/:username',usuariosControl.getidofuser);
 
 //PUT
-router.put('/update/:usuarioId')
-
-//
-router.route('/update/:usuarioId')
-    .put(multer.single('rutaimagen'), usuariosControl.updatePerfil);
-
+router.put('/update/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateUsuario);
+//router.route('/update/:usuarioId').put(multer.single('rutaimagen'), usuariosControl.updatePerfil);
 
 //DELETE
 router.delete('/deleteuser/:usuarioId', usuariosControl.deleteUsuario);  // borra un usuario

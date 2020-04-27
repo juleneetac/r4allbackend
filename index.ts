@@ -29,7 +29,7 @@ app.use(cors());
 app.use(bodyParser.json()); //para poder enviar json con el POST
 
 //
-app.use('uploads', express.static(path.resolve('uploads')));
+app.use('/uploads', express.static(path.resolve('uploads')));
 
 app.use('/usr', usuariosRouter);   //students
 app.use('/trn', torneosRouter);   //subjects

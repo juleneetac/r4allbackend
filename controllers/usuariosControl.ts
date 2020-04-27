@@ -1,7 +1,6 @@
 'use strict';
 export{};
 
-
 let UsuariosSchema = require('../models/Usuarios');
 let TorneosSchema = require('../models/Torneos');
 let PartidasSchema = require('../models/Partidas');
@@ -10,13 +9,18 @@ let MensajesSchema = require('../models/Mensajes');
 let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
 
+import Perfil from '../models/Profile';
+let avatar = '../uploads/user.png';
+
 exports.registrar = async function (req, res){  //registrarse un usuario si el usuario ya existe da error
     let usuario = req.body;
+    const rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
     console.log("username "+usuario.username)
     console.log("Mail "+ usuario.mail)
     console.log("password "+usuario.password)
     console.log("edad "+usuario.edad)
     console.log("sexo "+usuario.sexo)
+    console.log("rutaimagen"+rutaimagen)
     console.log("ubicacion "+usuario.ubicacion)
     let user = new UsuariosSchema()
     console.log(user)
@@ -38,6 +42,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             user.password = usuario.password
             user.edad = usuario.edad
             user.sexo = usuario.sexo
+            user.rutaimagen = rutaimagen
             user.ubicacion = usuario.ubicacion
             user.exp = 0
             user.valoracion = 0
@@ -210,5 +215,57 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
     catch(err){
         res.status(500).send(err)
         console.log(err);
+    }
+};
+
+
+//
+exports.updatePerfil = async function (req,res){
+    try{
+        const {id} = req.params.usuarioId;
+        console.log(id);
+        const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, 
+            partidas, torneos, chats, amigos} = req.body;
+        const rutaimagen = req.file.path;
+        console.log(rutaimagen);
+        console.log(req.body);
+        const update = await UsuariosSchema.findByIdAndUpdate(id,{
+            username,
+            mail,
+            password,
+            sexo,
+            rutaimagen,
+            ubicacion,
+            edad,
+            exp,
+            valoracion,
+            partidas,
+            torneos,
+            chats,
+            amigos
+        }, {new: true});
+    
+        return res.json({
+            message: 'Success',
+            update
+        })
+    }
+    catch(err){
+
+    }
+
+
+};
+
+exports.getidofuser = async function (req,res){
+    const username = req.params.username;
+    const usuario = await UsuariosSchema.findOne({username: username})
+    console.log(usuario);
+    if (username){
+    res.status(200).json(usuario._id);
+    }
+
+    else {
+    res.status(424).send('Not found');
     }
 };

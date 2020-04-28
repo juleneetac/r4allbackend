@@ -42,7 +42,7 @@ app.use('/cht', chatsRouter);   //subjects
 app.use('/perfil', profileRouter);
 
 //Mongo database connection
-mongoose.connect("mongodb://127.0.0.1:27017/r4all", {
+mongoose.connect(process.env.DB_CONNECTION||"mongodb://127.0.0.1:27017/r4all", { //idealmete esto seria una variable de entorno
     useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true

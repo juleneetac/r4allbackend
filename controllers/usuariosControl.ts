@@ -8,6 +8,8 @@ let ParticipantesSchema = require('../models/Participantes');
 let MensajesSchema = require('../models/Mensajes');
 let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
+import {Request, Response} from 'express';
+
 
 //
 import Perfil from '../models/Profile';
@@ -218,7 +220,7 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
     }
 };
 
-exports.updateUsuario = async function (req,res){
+/* exports.updateUsuario = async function (req,res){
     try{
         const {id} = req.params.usuarioId;
         console.log(id);
@@ -248,7 +250,41 @@ exports.updateUsuario = async function (req,res){
         res.status(500).send(err)
         console.log(err);
     }
-};
+}; */
+
+export async function updatePerfil(req:Request, res:Response): Promise<Response>{
+    const {id} = req.params;
+    console.log(id);
+    const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, 
+        partidas, torneos, chats, amigos} = req.body;
+    console.log(req.body);
+    console.log(req.file);
+/*     const rutaimagen = req.file.path;
+    console.log(rutaimagen);*/ 
+    console.log(req.body);
+    console.log(req.file.path);
+    const update = await UsuariosSchema.findByIdAndUpdate(id,{
+        username,
+        mail,
+        password,
+        sexo,
+        rutaimagen : req.file.path,
+        ubicacion,
+        edad,
+        exp,
+        valoracion,
+        partidas,
+        torneos,
+        chats,
+        amigos
+    }, {new: true});
+
+    return res.json({
+        message: 'Success',
+        update
+    })
+}
+
 
 exports.deleteUsuario = async function (req, res) { //borro el usuario que le paso con id
     try{
@@ -265,3 +301,26 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
         console.log(err);
     }
 };
+
+
+export async function getpassofuser(req:Request, res: Response){
+    const iduser = req.params.iduser;
+    const contra = await UsuariosSchema.findOne({id: iduser})
+    console.log(contra);
+    if (contra)
+    {
+        res.status(200).json(contra.password);
+    }
+    else{
+        res.status(404).send({message: 'Not Found'});
+    }
+
+};
+
+
+export async function getavatar (req:Request, res:Response): Promise<Response>{
+
+    const avatar = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
+    
+    return res.json(avatar);
+}

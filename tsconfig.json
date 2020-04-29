@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
-    "noImplicitAny": false
+    "noImplicitAny": false,
     /* Basic Options */
     // "incremental": true,                   /* Enable incremental compilation */
 
@@ -24,7 +24,7 @@
     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     
-    ////"outDir": "./build",                        /* Redirect output structure to the directory. */
+    "outDir": "./build",                        /* Redirect output structure to the directory. */
     
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
@@ -79,5 +79,11 @@
 
     /* Advanced Options */
     ////"forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
-  }
+  },
+  "include": [
+    "./**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,13 +1,8 @@
 'use strict';
 export{};
-import * as jwt from "jsonwebtoken";
 import passport = require('passport');
-import {JWT_SECRET} from "../util/secrets";
-import "../auth/passportHandler";
 import {Request, Response, json, NextFunction} from 'express';
-//import bcrypt from "bcrypt";
 const nodemailer = require("nodemailer");
-
 
 let UsuariosSchema = require('../models/Usuarios');
 let TorneosSchema = require('../models/Torneos');
@@ -16,6 +11,10 @@ let ParticipantesSchema = require('../models/Participantes');
 let MensajesSchema = require('../models/Mensajes');
 let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
+
+//
+import Perfil from '../models/Profile';
+let avatar = '../uploads/user.png';
 
 exports.registrar = async function (req, res){  //registrarse un usuario si el usuario ya existe da error
     let usuario = req.body;
@@ -60,76 +59,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             }
         }
 
-
-// let transporter = nodemailer.createTransport({   //para envir mail cuando se regisyre el user
-//             service: 'gmail',
-//             host:'smtp.gmail.com',
-//             auth: {
-//               user: 'piterarmstrongeetac@hotmail.com',
-//               pass: 'alexmarcjulenbernat99'
-//             }
-//           });
-
-// function sendMail(mail, username){
-//             let mailOptions = {
-//               from: 'piterarmstrongeetac@hotmail.com',
-//               to: mail,
-//               subject: 'Welcome to Erasmus App',
-//               html: `<h1>Hi ${username}!</h1>
-//                           <p>Welcome to the Erasmus Social Network </p>
-//                           <p>We are delighted that you have registered in our app. We hope you enjoy all our content.</p>`
-//             };
-//             transporter.sendMail(mailOptions, function(error, info){
-//               if (error) {
-//                 console.log(error);
-//               } else {
-//                 console.log('Email sent: ' + info.response);
-//               }
-//             });
-//           }
-
-
-
-// exports.registrar = async function (req, res){  //registrarse un usuario si el usuario ya existe da error
-//     let usuario = req.body;
-//     console.log("username "+usuario.username)
-//     console.log("Mail "+ usuario.mail)
-//     console.log("password "+usuario.password)
-//     console.log("edad "+usuario.edad)
-//     console.log("sexo "+usuario.sexo)
-//     console.log("ubicacion "+usuario.ubicacion)
-//     let user = new UsuariosSchema()
-//     console.log(user)
-//     let foundUsername = await UsuariosSchema.findOne({username:usuario.username});
-//     let foundMail = await UsuariosSchema.findOne({mail:usuario.mail});
-
-//     if(foundUsername) {
-//         return res.status(409).json({message: "Nombre de usuario ya registrado. Pon otro nombre"});
-//     }
-
-//     else if(foundMail) {
-//         return res.status(410).json({message: "Mail ya registrado. Pon otra cuenta de mail "});
-//     }
-
-//     else{
-//         try{
-//             user.username = usuario.username
-//             user.mail = usuario.mail
-//             user.password = usuario.password
-//             user.edad = usuario.edad
-//             user.sexo = usuario.sexo
-//             user.ubicacion = usuario.ubicacion
-//             await user.save();
-//             return res.status(201).send({message: "Usuario created successfully"}) 
-//             } 
-//         catch (err) {
-//             res.status(500).send(err);
-//             console.log(err);
-//             }
-//         }
-//     }
-
-    exports.login = async function (req:Request,res:Response, next: NextFunction){ //logearse un usuario si la contraseña no coincide da error
+ exports.login = async function (req:Request,res:Response, next: NextFunction){ //logearse un usuario si la contraseña no coincide da error
             let usuario = req.body;
     //try {
         console.log("username body: " +usuario.username)
@@ -157,49 +87,97 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
       // res.status(503).send(err)
       //}
         }
+//-----PROVISIONAL HASTA QUE GUARDEMOS EL USUARIO EN EL LOCAL STORAGE DEL FRONTEND-----//
+exports.getidofuser = async function (req,res){
+    const username = req.params.username;
+    const usuario = await UsuariosSchema.findOne({username: username})
+    console.log(usuario);
+    if (username){
+    res.status(200).json(usuario._id);
+    }
 
-// exports.login = async function (req, res){ //logearse un usuario si la contraseña no coincide da error
-//     let usuario = req.body;
-//     try {
-//         console.log("username body: " +usuario.username)
-//         console.log("contraseña body :" +usuario.password)
-//         let username = await UsuariosSchema.findOne({ username: usuario.username })   
-//         console.log("Se intenta logear el usuario "+usuario.username) //el que escribo ahora no el que ya tengo en la db
-
-//         if (!username) {
-//           return res.status(404).send({message: 'Usuario no encontrado'})
-
-//         } else if (username.length === 0 ) {
-//           return res.status(401).send({message: 'Inserta en el campo username'})
-//         }  
-//         if(username.password === usuario.password){ //la primera contraseña es como se llama en la db y la segunda la del json
-//           res.status(200).send({message: "Usuario logeado correctamente"})
-//         }
-//         else {
-//           res.status(402).send({message: 'Incorrect password'})
-//         }
-//       }catch (err) {
-//        res.status(500).send(err)
-//       }
-//     }
+    else {
+    res.status(404).send({message: 'Not Found'});
+    }
+};
 
 exports.getUsuario = async function (req, res){ //me da datos de un user especifico
+    try{
+        let my_id = req.params.usuarioId;
+        let user = await UsuariosSchema.findById(my_id);
+        if(user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).send({message: 'User not found'});
+        }
+    }
+    catch (err) {
+        res.status(500).send(err)
+        console.log(err);
+    }
+};
+
+exports.getUsuarios = async function (req, res){
+    try{
+        //Buscar lista general o por filtros en el JSON
+        let { flags, ubicacion, radio, sexo, edad, exp, valoracion } = req.body;        
+        
+        
+        //case flags = [true,true,3,3,3]
+        let usuarios = await UsuariosSchema.find({
+            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            "sexo": sexo,
+            "edad": {$gte: edad[0], $lte: edad[1]},
+            "exp": {$gte: exp[0], $lte: exp[1]},
+            "valoracion": {$gte: valoracion[0], $lte: valoracion[1]}
+        });
+
+        //------------------------------------ BUSCAR SEGÚN LOS FLAGS: QUEDA PENDIENTE ---------------------------------------//
+        /*switch(flags[0]){
+            case true: //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            case false: usuarios = await usuarios.find();
+        }
+        switch(flags[1]){
+            case true: usuarios = await usuarios.find({'sexo': req.body.sexo});
+            case false: usuarios = await usuarios.find();
+        }
+        switch(flags[2]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.edad.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max, $gt: req.body.edad.min}});
+        }
+        switch(flags[2]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.exp.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max, $gt: req.body.exp.min}});
+        }
+        switch(flags[3]){
+            case 0: usuarios = await usuarios.find();
+            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max}});
+            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.valoracion.min}});
+            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max, $gt: req.body.valoracion.min}});
+        } */
+        
+        if(usuarios)
+            res.status(200).json(usuarios);
+        else 
+            res.status(404).json("No se han encontrado Usuarios con los parámetros seleccionados");
+    }
+    catch (err) {
+        res.status(500).send(err)
+        console.log(err);
+    }
+}
+
+exports.getAllUsuarios = async function (req, res){ //me da datos de un user especifico
     let my_id = req.params.usuarioId;
     let user = await UsuariosSchema.findById(my_id);
     if(user) {
         res.status(200).json(user);
     } else {
         res.status(424).send({message: 'User not found'});
-    }
-};
-
-exports.getUsuarios = async function (req, res){   //me da el nombre de todas los usuarios
-    let user = await UsuariosSchema.find().select('username');
-    console.log(user);
-    if(user) {
-        res.status(200).json(user);
-    } else {
-        res.status(424).send({message: 'user error'});
     }
 };
 
@@ -212,7 +190,7 @@ exports.getPartidasde  = async function(req, res){
     if(partida) {
         res.status(200).json(partida);
     } else {
-        res.status(424).send({message: 'Error buscando partidas'});
+        res.status(404).send({message: 'Error buscando partidas'});
     }
 };
 
@@ -224,7 +202,7 @@ exports.getTorneosde  = async function(req, res){ //me da los torneos de un juga
     if(torneo) {
         res.status(200).json(torneo);
     } else {
-        res.status(424).send({message: 'Error buscando torneos'});
+        res.status(404).send({message: 'Error buscando torneos'});
     }
 };
 
@@ -236,7 +214,7 @@ exports.getChatsde  = async function(req, res){  //me da los chats de un jugador
     if(chat) {
         res.status(200).json(chat);
     } else {
-        res.status(424).send({message: 'Error de chat'});
+        res.status(404).send({message: 'Error de chat'});
     }
 };
 
@@ -249,7 +227,39 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
         res.status(200).json(amigo);
     } 
     else {
-        res.status(424).send({message: 'Error al ver tus amigos'});
+        res.status(404).send({message: 'Error al ver tus amigos'});
+    }
+};
+
+exports.updateUsuario = async function (req,res){
+    try{
+        const {id} = req.params.usuarioId;
+        console.log(id);
+        const {username,mail,password, sexo, ubicacion, edad, exp, valoracion, partidas, torneos, chats, amigos} = req.body;
+        console.log(req.body);
+        const rutaimagen = req.file.path;
+        console.log(rutaimagen);
+        console.log(req.body);
+        const usuarioEditado = await UsuariosSchema.findByIdAndUpdate(id,{
+            username,
+            mail,
+            password,
+            sexo,
+            rutaimagen,
+            ubicacion,
+            edad,
+            exp,
+            valoracion,
+            partidas,
+            torneos,
+            chats,
+            amigos
+        }, {new: true});
+        res.status(201).json({usuarioEditado});
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
     }
 };
 
@@ -265,6 +275,6 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
     }
     catch(err){
         res.status(500).send(err)
+        console.log(err);
     }
 };
-

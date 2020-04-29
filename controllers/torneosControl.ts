@@ -22,19 +22,45 @@ exports.getTorneo = async function (req, res){ //me da datos de un torneo especi
 exports.getTorneos = async function (req, res){
     //Buscar lista general o por filtros en el JSON
     try{
-        let { flags, ubicacion, radio, pistacubierta, tipopista, modo, organizador, participantes } = req.body;
+        let { flags } = req.body;        
+        
+        //---Para agregar dinamicamente propiedades en un objeto---//
+        interface LooseObject {
+            [key: string]: any
+        }
+        let query:LooseObject = {};
 
-        //case flags = [true,true,true,3]
-        let torneos = await TorneosSchema.find({
+        if(flags[0]){
+            let { ubicacion, radio } = req.body;
             //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
-            "pistacubierta": pistacubierta,
-            "tipopista": tipopista,
-            "modo": modo,
-            "organizador": organizador,
-            //"participantesLength": {$gte: participantes[0], $lte: participantes[1]}
-        });
+        }
+        if(flags[1]){
+            let { pistacubierta } = req.body;
+            Object.assign(query, {'pistacubierta': pistacubierta});
+        }
+        if(flags[2]){
+            let { tipopista } = req.body;
+            Object.assign(query, {'tipopista': tipopista});
+        }
+        if(flags[3]){
+            let { modo } = req.body;
+            Object.assign(query, {'modo': modo});
+        }
+        let participantesFlag: number = flags[4];
+        if(participantesFlag != 0){
+            let { participantes } = req.body;
+            if (participantesFlag == 1){
+                Object.assign(query, {'participantesLength': {$gte: participantes[0]}});
+            }
+            else if (participantesFlag== 2){
+                Object.assign(query, {'participantesLength': {$lte: participantes[1]}});
+            }
+            else if (participantesFlag == 3){
+                Object.assign(query, {"participantesLength":  {$gte: participantes[0], $lte: participantes[1]}});
+            }
+        }
 
-        //------------------------------------ BUSCAR SEGÚN LOS FLAGS: QUEDA PENDIENTE ---------------------------------------//
+        let torneos = await TorneosSchema.find(query);
 
         if(torneos)
             res.status(200).json(torneos);

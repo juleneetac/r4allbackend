@@ -115,47 +115,67 @@ exports.getUsuario = async function (req, res){ //me da datos de un user especif
 };
 
 exports.getUsuarios = async function (req, res){
+    //Buscar lista general o por filtros en el JSON
     try{
-        //Buscar lista general o por filtros en el JSON
-        let { flags, ubicacion, radio, sexo, edad, exp, valoracion } = req.body;        
+        let { flags } = req.body;        
         
-        
-        //case flags = [true,true,3,3,3]
-        let usuarios = await UsuariosSchema.find({
-            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
-            "sexo": sexo,
-            "edad": {$gte: edad[0], $lte: edad[1]},
-            "exp": {$gte: exp[0], $lte: exp[1]},
-            "valoracion": {$gte: valoracion[0], $lte: valoracion[1]}
-        });
+        //---Para agregar dinamicamente propiedades en un objeto---//
+        interface LooseObject {
+            [key: string]: any
+        }
+        let query:LooseObject = {};
 
-        //------------------------------------ BUSCAR SEGÚN LOS FLAGS: QUEDA PENDIENTE ---------------------------------------//
-        /*switch(flags[0]){
-            case true: //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
-            case false: usuarios = await usuarios.find();
+        if(flags[0]){
+            let { ubicacion, radio } = req.body;
+            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
         }
-        switch(flags[1]){
-            case true: usuarios = await usuarios.find({'sexo': req.body.sexo});
-            case false: usuarios = await usuarios.find();
+        if(flags[1]){
+            let { sexo } = req.body;
+            Object.assign(query, {'sexo': sexo});
         }
-        switch(flags[2]){
-            case 0: usuarios = await usuarios.find();
-            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max}});
-            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.edad.min}});
-            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.edad.max, $gt: req.body.edad.min}});
+        let edadFlag: number = flags[2];
+        if(edadFlag != 0){
+            let { edad } = req.body;
+            if (edadFlag == 1){
+                Object.assign(query, {'edad': {$gte: edad[0]}});
+            }
+            else if (edadFlag == 2){
+                Object.assign(query, {'edad': {$lte: edad[1]}});
+            }
+            else if (edadFlag == 3){
+                Object.assign(query, {"edad":  {$gte: edad[0], $lte: edad[1]}});
+            }
         }
-        switch(flags[2]){
-            case 0: usuarios = await usuarios.find();
-            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max}});
-            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.exp.min}});
-            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.exp.max, $gt: req.body.exp.min}});
+        let expFlag: number = flags[3];
+        if(expFlag != 0){
+            let { exp } = req.body;
+            if (expFlag == 1){
+                Object.assign(query, {'exp': {$gte: exp[0]}});
+            }
+            else if (expFlag == 2){
+                Object.assign(query, {'exp': {$lte: exp[1]}});
+            }
+            else if (expFlag == 3){
+                Object.assign(query, {"exp":  {$gte: exp[0], $lte: exp[1]}});
+            }
         }
-        switch(flags[3]){
-            case 0: usuarios = await usuarios.find();
-            case 1: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max}});
-            case 2: usuarios = await usuarios.find({'edad': {$gt: req.body.valoracion.min}});
-            case 3: usuarios = await usuarios.find({'edad': {$lt: req.body.valoracion.max, $gt: req.body.valoracion.min}});
-        } */
+        let valoracionFlag: number = flags[4];
+        if(valoracionFlag != 0){
+            let { valoracion } = req.body;
+            if (valoracionFlag == 1){
+                Object.assign(query, {'valoracion': {$gte: valoracion[0]}});
+            }
+            else if (valoracionFlag== 2){
+                Object.assign(query, {'valoracion': {$lte: valoracion[1]}});
+            }
+            else if (valoracionFlag == 3){
+                Object.assign(query, {"valoracion":  {$gte: valoracion[0], $lte: valoracion[1]}});
+            }
+        }
+
+        console.log(query);
+
+        let usuarios = await UsuariosSchema.find(query);
         
         if(usuarios)
             res.status(200).json(usuarios);

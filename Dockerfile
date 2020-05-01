@@ -7,7 +7,7 @@ RUN npm install
 #RUN npm ci --only=production
 
 COPY . .
-RUN npm run tsc
+RUN npm run build
 
 EXPOSE 3600
 CMD [ "npm", "start" ]

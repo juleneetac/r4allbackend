@@ -39,11 +39,10 @@ app.use('/msg', mensajesRouter);   //students
 app.use('/cht', chatsRouter);   //subjects
 
 //
-app.use('/perfil', profileRouter);
+app.use('/perfil', profileRouter);  //esto es de prueba del bernat
 
 //Mongo database connection
-let rutadb = process.env.DB_CONNECTION||"mongodb://127.0.0.1:27017/r4all"
-mongoose.connect(rutadb, {
+mongoose.connect("mongodb://127.0.0.1:27017/r4all", {
     useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true

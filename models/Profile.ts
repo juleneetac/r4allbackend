@@ -2,7 +2,7 @@ import {Schema, model, Document} from 'mongoose';
 import mongoose = require ('mongoose');
 
 
-const schema = new Schema ({
+const schema = new Schema ({   //este perfil es de prueba del bernat
 
     username: String,
     mail: String,

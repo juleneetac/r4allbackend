@@ -7,7 +7,7 @@
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly index.ts",
     "nodemon": "nodemon",
-    "prod": "tsc && node index.js",
+    "prod": "tsc && node ./build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "G2 EA",

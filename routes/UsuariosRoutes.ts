@@ -22,7 +22,6 @@ router.get('/getamigbyuser/:usuarioId', usuariosControl.getAmigosde); // me da l
 
 //GET
 router.get('/getidofuser/:username',usuariosControl.getidofuser);
-router.route('/avatar/:id').get(usuariosControl.getavatar); 
 
 //PUT
 router.put('/update/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateUsuario);

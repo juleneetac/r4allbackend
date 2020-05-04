@@ -26,6 +26,8 @@ router.route('/avatar/:id').get(usuariosControl.getavatar);
 
 //PUT
 router.put('/update/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateUsuario);
+router.put('/updatenofoto/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateUsuarionofoto);
+
 //router.route('/update/:usuarioId').put(multer.single('rutaimagen'), usuariosControl.updatePerfil);
 
 //DELETE

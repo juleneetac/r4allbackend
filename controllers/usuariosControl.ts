@@ -287,6 +287,40 @@ exports.updateUsuario = async function (req,res){
     }
 };
 
+exports.updateUsuarionofoto = async function (req,res){
+    try{
+        let difpass;
+        let userpass = new UsuariosSchema()
+        const id = req.params.usuarioId;
+        console.log(id);
+        let editusuario =  req.body;
+        difpass = userpass.setPassword(editusuario.password)
+        
+        let newuser = {
+        mail: editusuario.mail,
+        hash: userpass.hash,
+        salt: userpass.salt,
+        edad: editusuario.edad,
+        sexo: editusuario.sexo,
+        ubicacion: editusuario.ubicacion,
+
+        }
+       // const {mail, difpass, sexo, ubicacion, edad} = req.body;
+        console.log("Usuario editado "+ req.body.mail)
+       // let finduser = await UsuariosSchema.findOne({ username: usuario.username }) 
+        //const rutaimagen = req.file.path;
+        console.log(req.body);
+        const usuarioEditado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, newuser, {new: true});
+        console.log(usuarioEditado);
+        res.status(201).json({usuarioEditado});
+    }
+    catch(err){
+        //console.log("Usuario editado "+ req.body.username)
+        res.status(500).send(err)
+        console.log(err);
+    }
+};
+
 exports.deleteUsuario = async function (req, res) { //borro el usuario que le paso con id
     try{
         let my_id = req.params.usuarioId;
@@ -302,10 +336,3 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
         console.log(err);
     }
 };
-
-export async function getavatar (req:Request, res:Response): Promise<Response>{
-
-    const avatar = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
-    
-    return res.json(avatar);
-}

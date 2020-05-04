@@ -10,6 +10,7 @@ import morgan = require("morgan");
 //
 import multer from './libs/multer';
 import path = require('path');
+var socket = require('socket.io');
 
 //Import routes
 let usuariosRouter = require("./routes/UsuariosRoutes"); //variable con la ruta usuarios
@@ -53,10 +54,15 @@ mongoose.connect(rutadb, {
     console.log("Database error: " + err.message);
 });
 
-
 //Make app listen on port 7000
 const port = 7000; // en el puerto que vamos a escuchar
-app.listen(port, function () {
+const server = app.listen(port, function () {
     console.log('Listening on http://localhost:' + port);
 });
+
+//sockets
+//server del chat
+//Socket setup for conexion of every client
+const io = socket(server);
+
 module.exports = app;

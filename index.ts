@@ -10,7 +10,7 @@ import morgan = require("morgan");
 //
 import multer from './libs/multer';
 import path = require('path');
-var socket = require('socket.io');
+
 
 //Import routes
 let usuariosRouter = require("./routes/UsuariosRoutes"); //variable con la ruta usuarios
@@ -60,9 +60,110 @@ const server = app.listen(port, function () {
     console.log('Listening on http://localhost:' + port);
 });
 
+
+
 //sockets
 //server del chat
 //Socket setup for conexion of every client
+var socket = require('socket.io');
 const io = socket(server);
+//Event listener when a socket is connected
+//Conection for every client
+io.on('connection', (socket) => {
+    console.log('user connected socket');
+  
+    socket.on('disconnect', function(){
+      io.emit('users-changed', {user: socket.username, event: 'left'});   
+    });
+   
+    socket.on('set-username', (username) => {
+      socket.username = username;
+      console.log(socket.username);
+      io.emit('users-changed', {user: username, event: 'joined'});    
+    });
+    
+    socket.on('add-message', (message) => {
+      io.emit('message', {text: message.text, from: message.from, created: new Date()});    
+    });
+  });
+
+
 
 module.exports = app;
+
+
+
+// io.on('connection', (socket) => {
+//     console.log('user connected socket');
+
+//     socket.on('new-message', (message) => {
+//         io.emit(message);
+//       });
+// });
+
+
+
+
+// io.on('connection', (socket) => {
+  
+//     socket.on('disconnect', function(){
+//       io.emit('users-changed', {user: socket.username, event: 'left'});   
+//     });
+   
+//     socket.on('set-username', (username) => {
+//       socket.username = username;
+//       io.emit('users-changed', {user: username, event: 'joined'});    
+//     });
+    
+//     socket.on('add-message', (message) => {
+//       io.emit('message', {text: message.text, from: socket.username, created: new Date()});    
+//     });
+//   });
+
+
+
+
+//io.on('connection', onConnection);
+
+//function onConnection(socket) {
+
+    // io.on('connection',function(socket){
+    //     console.log('Conexion con el Socket: ', socket.id)
+    //     socket.on('nusername', function(username){
+    //         socket.username = username;
+        
+    //     });
+      
+          
+    //   socket.on('connected', function(){
+    //       var allConnectedClients = io.sockets.connected; //list os socket connected
+    //       var send = []
+    //       Object.keys(allConnectedClients).forEach(function(key){
+    //           var val = allConnectedClients[key]["username"] + " " + allConnectedClients[key]["id"] ;
+    //           send.push(val);
+    //       });
+    
+    //       io.sockets.emit('usersconnected',send);//send to connected socket
+    //       console.log("Enviando lista de usuarios al front: "+send);
+    
+    //   });
+      
+    
+      
+    //   socket.on('disconnect', function(){
+    //       console.log('Usuario desconectado: '+socket.username);
+    //           var allConnectedClients = io.sockets.connected; //list os socket connected
+    //           var send = []
+    //           Object.keys(allConnectedClients).forEach(function(key){
+    //               var val = allConnectedClients[key]["username"] + " " + allConnectedClients[key]["id"] ;
+    //               send.push(val);
+    //           });
+      
+    //           io.sockets.emit('user',send);//send to connected socket
+    //   });
+    //   socket.on('chat',function(username, message, destino){//send messages
+    //       io.sockets.emit('chat',username, message, destino);
+    //       console.log("Recibiendo y reenviando" + message + destino);
+    //   });
+    // });
+

@@ -62,28 +62,60 @@ const server = app.listen(port, function () {
 
 
 
-//sockets
+//SOCKETS
 //server del chat
 //Socket setup for conexion of every client
+
+//Let us define a hashMap being the key the username and the values its socketId
+let listaUsuarios: Map<string, string> = new Map();
+
 var socket = require('socket.io');
 const io = socket(server);
 //Event listener when a socket is connected
 //Conection for every client
 io.on('connection', (socket) => {
+    
     console.log('user connected socket');
-  
+    let username2: string;
+
     socket.on('disconnect', function(){
       io.emit('users-changed', {user: socket.username, event: 'left'});   
     });
    
     socket.on('set-username', (username) => {
       socket.username = username;
+      username2 = username;     //puede que haya que quitar esta funcion porque no es una sala
       console.log(socket.username);
       io.emit('users-changed', {user: username, event: 'joined'});    
+      listaUsuarios.set(username, socket.id);
     });
     
-    socket.on('add-message', (message) => {
-      io.emit('message', {text: message.text, from: message.from, created: new Date()});    
+    // socket.on('add-message', (message) => {
+    //   io.emit('message', {text: message.text, from: message.from, created: new Date()});    
+    // });
+
+    //Private message user-to-user if both are online, otherwise store it
+    socket.on('message', function (data) {
+        console.log(data.message + " by " + username2 + " to " + data.destination);
+        let message = data.message;
+        if (listaUsuarios.get(data.destination)) {
+            io.to(<string>listaUsuarios.get(data.destination)).emit('message', {message: message, sender: username2, created: new Date()});
+        } 
+        else {
+            console.log("error en el chat");
+            
+        }
+    });
+
+    socket.on('giveMeUserList', function () {
+        socket.emit('listaUsuarios', Array.from(listaUsuarios));
+    });
+
+    //On a disconnection, delete its socketId from the hashMap
+    socket.on('disconnect', function() {
+        console.log(username2 + ' disconnected');
+        listaUsuarios.delete(username2);
+        io.emit('userList', Array.from(username2));
     });
   });
 

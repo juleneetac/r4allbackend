@@ -9,8 +9,8 @@ let torneos = new Schema({
     tipopista: String,      //Césped, TierraBatida, etc.
     ubicacion: String,
     ganador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },
-    organizador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },
-    puntos: Number,   //ni idea, creo que mejor borrarla
+    organizador: String,
+    //puntos: Number,   //ni idea, creo que mejor borrarla
     participantes: [{ type: mongoose.Types.ObjectId, ref: 'participantes' }]
 });
 module.exports = mongoose.model('torneos', torneos);  //la coleccion se llamara torneos

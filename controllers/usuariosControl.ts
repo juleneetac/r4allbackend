@@ -45,6 +45,9 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
                 newuser.edad = usuario.edad
                 newuser.sexo = usuario.sexo
                 newuser.ubicacion = usuario.ubicacion
+                newuser.exp = 0;
+                newuser.valoracion = 0;
+                newuser.rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
                 //sendMail(newuser.mail, newuser.username);
                 return newuser.save()
                 .then(() => res.status(200).json({
@@ -129,14 +132,18 @@ exports.getUsuarios = async function (req, res){
         let query:LooseObject = {};
 
         if(flags[0]){
+            let { username } = req.body;
+            Object.assign(query, {'username': { "$regex": username, "$options": "i" }});
+        }
+        if(flags[1]){
             let { ubicacion, radio } = req.body;
             //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
         }
-        if(flags[1]){
+        if(flags[2]){
             let { sexo } = req.body;
-            Object.assign(query, {'sexo': sexo});
+            Object.assign(query, {'sexo': {'$regex' : `^${sexo}$`, '$options' : 'i'}});
         }
-        let edadFlag: number = flags[2];
+        let edadFlag: number = flags[3];
         if(edadFlag != 0){
             let { edad } = req.body;
             if (edadFlag == 1){
@@ -149,7 +156,7 @@ exports.getUsuarios = async function (req, res){
                 Object.assign(query, {"edad":  {$gte: edad[0], $lte: edad[1]}});
             }
         }
-        let expFlag: number = flags[3];
+        let expFlag: number = flags[4];
         if(expFlag != 0){
             let { exp } = req.body;
             if (expFlag == 1){
@@ -162,7 +169,7 @@ exports.getUsuarios = async function (req, res){
                 Object.assign(query, {"exp":  {$gte: exp[0], $lte: exp[1]}});
             }
         }
-        let valoracionFlag: number = flags[4];
+        let valoracionFlag: number = flags[5];
         if(valoracionFlag != 0){
             let { valoracion } = req.body;
             if (valoracionFlag == 1){
@@ -179,11 +186,8 @@ exports.getUsuarios = async function (req, res){
         console.log(query);
 
         let usuarios = await UsuariosSchema.find(query);
-        
-        if(usuarios)
-            res.status(200).json(usuarios);
-        else 
-            res.status(404).json("No se han encontrado Usuarios con los parámetros seleccionados");
+        res.status(200).json(usuarios);
+
     }
     catch (err) {
         res.status(500).send(err)
@@ -191,13 +195,20 @@ exports.getUsuarios = async function (req, res){
     }
 }
 
-exports.getAllUsuarios = async function (req, res){ //me da datos de un user especifico
-    let allusuarios = await UsuariosSchema.find().select('username');
-    console.log(allusuarios);
-    if(allusuarios) {
-        res.status(200).json(allusuarios);
-    } else {
-        res.status(424).send({message: 'Usuarios error'});
+exports.getAllUsuarios = async function (req, res){
+    //Devuelve todos los usuarios
+    try{
+        let allusuarios = await UsuariosSchema.find().select('username');
+        console.log(allusuarios);
+        if(allusuarios) {
+            res.status(200).json(allusuarios);
+        } else {
+            res.status(424).send({message: 'Error buscando Usuarios'});
+        }
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
     }
 };
 

@@ -10,5 +10,5 @@ COPY . .
 RUN npm run tsc
 
 
-EXPOSE 3600
-CMD [ "npm", "start" ]
+EXPOSE 7000
+CMD [ "npm", "run", "prod" ]

@@ -8,6 +8,7 @@ let mensajesControl = require('../controllers/mensajesControl');  //usuarios
 router.post('/addmsg', mensajesControl.addMensaje);   //crea un mensaje
 
 //get
+router.get('/getmsg/:userUsername', mensajesControl.getMensajes);
 
 //put
 

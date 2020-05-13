@@ -3,8 +3,9 @@
 import mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 let mensajes = new Schema({
+    author: String,
+    destination: String, //quien envia el mensaje
     mensaje: String,
-    sender: String, //quien envia el mensaje
-    fecha: Date
+    date: Date
 });
 module.exports = mongoose.model('mensajes', mensajes);

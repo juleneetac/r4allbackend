@@ -91,8 +91,8 @@ io.on('connection', (socket) => {
 
     //Private message user-to-user if both are online, otherwise store it
     socket.on('message', function (data) {
-        console.log(data.message + " by " + username2 + " to " + data.destination);
-        let message = data.message;
+        console.log(data.mensaje + " by " + username2 + " to " + data.destination);
+        let message = data.mensaje;
         if (listaUsuarios.get(data.destination)) {
             io.to(<string>listaUsuarios.get(data.destination)).emit('message', {message, username2});
         } 

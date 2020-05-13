@@ -62,7 +62,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
             }
         }
 
- exports.login = async function (req:Request,res:Response, next: NextFunction){ //logearse un usuario si la contraseña no coincide da error
+exports.login = async function (req:Request,res:Response, next: NextFunction){ //logearse un usuario si la contraseña no coincide da error
             let usuario = req.body;
     //try {
         console.log("username body: " +usuario.username)
@@ -89,20 +89,8 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
       //catch (err) {
       // res.status(503).send(err)
       //}
-        }
-//-----PROVISIONAL HASTA QUE GUARDEMOS EL USUARIO EN EL LOCAL STORAGE DEL FRONTEND-----//
-exports.getidofuser = async function (req,res){
-    const username = req.params.username;
-    const usuario = await UsuariosSchema.findOne({username: username})
-    console.log(usuario);
-    if (username){
-    res.status(200).json(usuario._id);
-    }
+}
 
-    else {
-    res.status(404).send({message: 'Not Found'});
-    }
-};
 
 exports.getUsuario = async function (req, res){ //me da datos de un user especifico
     try{

@@ -40,32 +40,31 @@ exports.getTorneos = async function (req, res){
         }
         if(flags[2]){
             let { tipopista } = req.body;
-            Object.assign(query, {'tipopista': tipopista});
+            Object.assign(query, {'tipopista': {'$regex' : `^${tipopista}$`, '$options' : 'i'}});
         }
         if(flags[3]){
             let { modo } = req.body;
-            Object.assign(query, {'modo': modo});
+            Object.assign(query, {'modo': {'$regex' : `^${modo}$`, '$options' : 'i'}});
         }
         let participantesFlag: number = flags[4];
         if(participantesFlag != 0){
             let { participantes } = req.body;
             if (participantesFlag == 1){
-                Object.assign(query, {'participantesLength': {$gte: participantes[0]}});
+                Object.assign(query, { $where: `this.participantes.length >= ${participantes[0]}`} );
             }
             else if (participantesFlag== 2){
-                Object.assign(query, {'participantesLength': {$lte: participantes[1]}});
+                Object.assign(query, { $where: `this.participantes.length <= ${participantes[1]}`} );
             }
             else if (participantesFlag == 3){
-                Object.assign(query, {"participantesLength":  {$gte: participantes[0], $lte: participantes[1]}});
+                Object.assign(query, { $where: `this.participantes.length >= ${participantes[0]} && this.participantes.length <= ${participantes[1]}`} );
             }
         }
 
-        let torneos = await TorneosSchema.find(query);
+        console.log(query);
 
-        if(torneos)
-            res.status(200).json(torneos);
-        else 
-            res.status(404).json("No se han encontrado Usuarios con los parámetros seleccionados");
+        let torneos = await TorneosSchema.find(query);
+        res.status(200).json(torneos);
+
     }
     catch(err){
         res.status(500).send(err);

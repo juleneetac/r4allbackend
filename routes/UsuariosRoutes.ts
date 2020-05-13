@@ -14,6 +14,7 @@ router.post('/getusrs', usuariosControl.getUsuarios);   //Devuelve la lista de U
 
 //GET
 router.get('/getusr/:usuarioId', usuariosControl.getUsuario); //me da un user en concreto con la id que le doy
+router.get('/getusrbyname/:username', usuariosControl.getUsuariobyusername); //me da un user en concreto con el username que le doy
 router.get('/getallusrs', usuariosControl.getAllUsuarios);   // me da todos los users
 router.get('/getpartbyuser/:usuarioId', usuariosControl.getPartidasde); //me da los torneos de un user
 router.get('/gettornbyuser/:usuarioId', usuariosControl.getTorneosde);  // me da las partidas de un user

@@ -116,6 +116,19 @@ exports.getUsuario = async function (req, res){ //me da datos de un user especif
         console.log(err);
     }
 };
+//Get one user by username
+exports.getUsuariobyusername = async (req, res) => {
+    try {
+      let user = await UsuariosSchema.findOne(req.param.username)
+      if (!user) {
+        return res.status(404).send({message: 'User not found'})
+      } else {
+        res.json(user)
+      }
+    }catch (err) {
+      res.status(500).send(err)
+    }
+  }
 
 exports.getUsuarios = async function (req, res){
     //Buscar lista general o por filtros en el JSON

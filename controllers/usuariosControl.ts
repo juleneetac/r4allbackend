@@ -290,7 +290,7 @@ exports.updateUsuario = async function (req,res){
         console.log(req.body);
         const usuarioEditado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, newuser, {new: true});
         console.log(usuarioEditado);
-        res.status(201).json({usuarioEditado});
+        res.status(201).json(usuarioEditado);
     }
     catch(err){
         //console.log("Usuario editado "+ req.body.username)
@@ -324,7 +324,7 @@ exports.updateUsuarionofoto = async function (req,res){
         console.log(req.body);
         const usuarioEditado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, newuser, {new: true});
         console.log(usuarioEditado);
-        res.status(201).json({usuarioEditado});
+        res.status(201).json(usuarioEditado);
     }
     catch(err){
         //console.log("Usuario editado "+ req.body.username)

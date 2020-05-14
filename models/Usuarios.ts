@@ -6,6 +6,7 @@ import crypto = require('crypto');
 //import crypto from 'crypto';
 import jwt =  require ('jsonwebtoken');
 import mongoose = require("mongoose");
+import Point from './Point';
 
 let UsuariosSchema = mongoose.Schema;
 let usuarios = new UsuariosSchema({
@@ -15,6 +16,7 @@ let usuarios = new UsuariosSchema({
     sexo: String,
     rutaimagen: String,
     ubicacion: String,
+    //localizacion: Point,
     edad: Number,
     exp: Number,
     valoracion: Number,

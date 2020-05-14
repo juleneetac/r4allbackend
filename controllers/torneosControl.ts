@@ -31,8 +31,15 @@ exports.getTorneos = async function (req, res){
         let query:LooseObject = {};
 
         if(flags[0]){
-            let { ubicacion, radio } = req.body;
-            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            let { punto, radio } = req.body;
+            Object.assign(query, {'punto':        
+            { $near:
+                {
+                  $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
+                  $maxDistance: radio
+                }
+             }
+            })
         }
         if(flags[1]){
             let { pistacubierta } = req.body;
@@ -76,11 +83,17 @@ exports.addTorneo = async function (req, res){
     try{
         //------------- COMPROBAR AUTORIDAD: Queda Pendiente -------------------//
         let newTorneo = new TorneosSchema();
+        newTorneo.nombre = req.body.nombre;
+        newTorneo.genero = req.body.genero;
         newTorneo.pistacubierta = req.body.pistacubierta;
         newTorneo.tipopista = req.body.tipopista;
+        newTorneo.tipobola = req.body.tipobola;
         newTorneo.modo = req.body.modo;
         newTorneo.ubicacion = req.body.ubicacion;
+        newTorneo.punto = req.body.punto;
         newTorneo.organizador = req.body.organizador;
+        newTorneo.inscripcion = req.body.inscripcion;
+        newTorneo.premio = req.body.premio;
 
         await newTorneo.save();
         res.status(200).send("Torneo creado")

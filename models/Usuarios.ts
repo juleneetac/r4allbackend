@@ -6,17 +6,24 @@ import crypto = require('crypto');
 //import crypto from 'crypto';
 import jwt =  require ('jsonwebtoken');
 import mongoose = require("mongoose");
-import Point from './Point';
 
 let UsuariosSchema = mongoose.Schema;
 let usuarios = new UsuariosSchema({
     username: String,
-    mail: String,     //cambiar las funciones de register o login para usar con el mail
+    mail: String,       //cambiar las funciones de register o login para usar con el mail
     password: String,
     sexo: String,
     rutaimagen: String,
-    ubicacion: String,
-    //localizacion: Point,
+    ubicacion: String,  //Nombre de la ubicación (Por ejemplo, Real Club de Tenis)
+    punto: {            //Punto de la ubicación
+        type: { 
+            type: String, 
+            default: "Point" 
+        },           
+        coordinates: { 
+            type: [Number] //[longitud,latitud]
+        }
+    },
     edad: Number,
     exp: Number,
     valoracion: Number,
@@ -28,6 +35,7 @@ let usuarios = new UsuariosSchema({
     salt: { type: String }
 });
 
+usuarios.index({punto: "2dsphere"});    //Para poder buscar según ubicación
 
 usuarios.methods.setPassword = function(password) {
     this.salt = crypto.randomBytes(16).toString('hex');

@@ -24,6 +24,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
         console.log("edad "+usuario.edad)
         console.log("sexo "+usuario.sexo)
         console.log("ubicacion "+usuario.ubicacion)
+        console.log(usuario.punto)
         
         let foundUsername = await UsuariosSchema.findOne({username: usuario.username});
         let foundMail = await UsuariosSchema.findOne({mail: usuario.mail});
@@ -45,11 +46,14 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
                 newuser.edad = usuario.edad
                 newuser.sexo = usuario.sexo
                 newuser.ubicacion = usuario.ubicacion
+                newuser.punto = usuario.punto
                 newuser.exp = 0;
                 newuser.valoracion = 0;
                 newuser.rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
                 //sendMail(newuser.mail, newuser.username);
+
                 return newuser.save()
+
                 .then(() => res.status(200).json({
                     jwt: newuser.generateJWT(),  //genera un json web token
                     usuario: newuser.toAuthJSON()
@@ -137,8 +141,15 @@ exports.getUsuarios = async function (req, res){
             Object.assign(query, {'username': { "$regex": username, "$options": "i" }});
         }
         if(flags[1]){
-            let { ubicacion, radio } = req.body;
-            //--------- BUSCAR POR UBICACIÓN Y RADIO: QUEDA PENDIENTE ------------//
+            let { punto, radio } = req.body;
+            Object.assign(query, {'punto':        
+            { $near:
+                {
+                  $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
+                  $maxDistance: radio
+                }
+             }
+            })
         }
         if(flags[2]){
             let { sexo } = req.body;
@@ -273,14 +284,14 @@ exports.updateUsuario = async function (req,res){
         difpass = userpass.setPassword(editusuario.password)
         
         let newuser = {
-        mail: editusuario.mail,
-        hash: userpass.hash,
-        salt: userpass.salt,
-        edad: editusuario.edad,
-        sexo: editusuario.sexo,
-        ubicacion: editusuario.ubicacion,
-        rutaimagen: req.file.path,
-
+            mail: editusuario.mail,
+            hash: userpass.hash,
+            salt: userpass.salt,
+            edad: editusuario.edad,
+            sexo: editusuario.sexo,
+            ubicacion: editusuario.ubicacion,
+            punto: editusuario.punto,
+            rutaimagen: req.file.path
         }
        // const {mail, difpass, sexo, ubicacion, edad} = req.body;
         console.log("Usuario editado "+ req.body.mail)
@@ -309,13 +320,13 @@ exports.updateUsuarionofoto = async function (req,res){
         difpass = userpass.setPassword(editusuario.password)
         
         let newuser = {
-        mail: editusuario.mail,
-        hash: userpass.hash,
-        salt: userpass.salt,
-        edad: editusuario.edad,
-        sexo: editusuario.sexo,
-        ubicacion: editusuario.ubicacion,
-
+            mail: editusuario.mail,
+            hash: userpass.hash,
+            salt: userpass.salt,
+            edad: editusuario.edad,
+            sexo: editusuario.sexo,
+            ubicacion: editusuario.ubicacion,
+            punto: editusuario.punto
         }
        // const {mail, difpass, sexo, ubicacion, edad} = req.body;
         console.log("Usuario editado "+ req.body.mail)

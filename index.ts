@@ -47,7 +47,8 @@ let rutadb = process.env.DB_CONNECTION||"mongodb://127.0.0.1:27017/r4all"
 mongoose.connect(rutadb, {
     useNewUrlParser: true,
     useFindAndModify: false,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 }).then(function () {
     console.log('Mongodb connection OK\n');
 }).catch(function (err) {

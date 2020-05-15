@@ -294,7 +294,8 @@ exports.updateUsuario = async function (req,res){
             rutaimagen: req.file.path
         }
        // const {mail, difpass, sexo, ubicacion, edad} = req.body;
-        console.log("Usuario editado "+ req.body.mail)
+        console.log("Usuario editado "+ req.body.mail);
+        console.log(req.body.punto.coordinates);
        // let finduser = await UsuariosSchema.findOne({ username: usuario.username }) 
         //const rutaimagen = req.file.path;
         console.log(newuser.rutaimagen);
@@ -329,7 +330,8 @@ exports.updateUsuarionofoto = async function (req,res){
             punto: editusuario.punto
         }
        // const {mail, difpass, sexo, ubicacion, edad} = req.body;
-        console.log("Usuario editado "+ req.body.mail)
+        console.log("Usuario editado "+ req.body.mail);
+        console.log(req.body.punto.coordinates);
        // let finduser = await UsuariosSchema.findOne({ username: usuario.username }) 
         //const rutaimagen = req.file.path;
         console.log(req.body);

@@ -276,33 +276,36 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
 
 exports.updateUsuario = async function (req,res){
     try{
-        let difpass;
-        let userpass = new UsuariosSchema()
-        const id = req.params.usuarioId;
-        console.log(id);
-        let editusuario =  req.body;
-        difpass = userpass.setPassword(editusuario.password)
-        
-        let newuser = {
-            mail: editusuario.mail,
-            hash: userpass.hash,
-            salt: userpass.salt,
-            edad: editusuario.edad,
-            sexo: editusuario.sexo,
-            ubicacion: editusuario.ubicacion,
-            punto: editusuario.punto,
-            rutaimagen: req.file.path
+        let id = req.params.usuarioId;
+        let check = await UsuariosSchema.findById(id);
+        if(check){
+            let difpass;
+            let userpass = new UsuariosSchema();
+            let usuarioEditado =  req.body;
+            difpass = userpass.setPassword(usuarioEditado.password)
+
+/*             let newuser = {
+                mail: editusuario.mail,
+                hash: userpass.hash,
+                salt: userpass.salt,
+                edad: editusuario.edad,
+                sexo: editusuario.sexo,
+                ubicacion: editusuario.ubicacion,
+                punto: editusuario.punto,
+                rutaimagen: req.file.path
+            } */
+
+            console.log(usuarioEditado);
+
+            const usuarioModificado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, usuarioEditado, {new: true});
+
+            console.log(usuarioModificado);
+            res.status(201).json(usuarioModificado);
         }
-       // const {mail, difpass, sexo, ubicacion, edad} = req.body;
-        console.log("Usuario editado "+ req.body.mail);
-        console.log(req.body.punto.coordinates);
-       // let finduser = await UsuariosSchema.findOne({ username: usuario.username }) 
-        //const rutaimagen = req.file.path;
-        console.log(newuser.rutaimagen);
-        console.log(req.body);
-        const usuarioEditado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, newuser, {new: true});
-        console.log(usuarioEditado);
-        res.status(201).json(usuarioEditado);
+        else{
+            res.status(404).json({"message": "Usuario no encontrado"});
+        }
+        
     }
     catch(err){
         //console.log("Usuario editado "+ req.body.username)
@@ -311,32 +314,22 @@ exports.updateUsuario = async function (req,res){
     }
 };
 
-exports.updateUsuarionofoto = async function (req,res){
+exports.updateImagenUsuario = async function (req,res){
     try{
-        let difpass;
-        let userpass = new UsuariosSchema()
-        const id = req.params.usuarioId;
-        console.log(id);
+        let id = req.params.usuarioId;
+        //let difpass;
+        //let userpass = new UsuariosSchema()
         let editusuario =  req.body;
-        difpass = userpass.setPassword(editusuario.password)
+        //difpass = userpass.setPassword(editusuario.password)
         
-        let newuser = {
-            mail: editusuario.mail,
-            hash: userpass.hash,
-            salt: userpass.salt,
-            edad: editusuario.edad,
-            sexo: editusuario.sexo,
-            ubicacion: editusuario.ubicacion,
-            punto: editusuario.punto
+        let usuarioNuevaImagen = {
+            rutaimagen: req.file.path
         }
-       // const {mail, difpass, sexo, ubicacion, edad} = req.body;
-        console.log("Usuario editado "+ req.body.mail);
-        console.log(req.body.punto.coordinates);
-       // let finduser = await UsuariosSchema.findOne({ username: usuario.username }) 
-        //const rutaimagen = req.file.path;
-        console.log(req.body);
-        const usuarioEditado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, newuser, {new: true});
+
+        console.log(usuarioNuevaImagen)
+        const usuarioEditado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, usuarioNuevaImagen, {new: true});
         console.log(usuarioEditado);
+
         res.status(201).json(usuarioEditado);
     }
     catch(err){

@@ -14,7 +14,7 @@ let torneos = new Schema({
         type: { type: String },           //"Point"
         coordinates: { type: [Number] }   //[latitud,longitud]
     },
-    ganador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },
+    ganador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },    //Si es null no saldría en el Mongo e indicaría que el Torneo está activo
     inscripcion: Number,    //Precio de inscripcion
     premio: String,         
     organizador: String,    //Por ejemplo, Club de Tenis, Federacion, Usuario...

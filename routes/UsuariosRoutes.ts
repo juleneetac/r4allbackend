@@ -22,8 +22,8 @@ router.get('/getchatbyuser/:usuarioId', usuariosControl.getChatsde); // me da lo
 router.get('/getamigbyuser/:usuarioId', usuariosControl.getAmigosde); // me da los amigos de un user
 
 //PUT
-router.put('/update/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateUsuario);
-router.put('/updatenofoto/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateUsuarionofoto);
+router.put('/update/:usuarioId', usuariosControl.updateUsuario);
+router.put('/updaterutaimagen/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateImagenUsuario);
 
 //DELETE
 router.delete('/deleteuser/:usuarioId', usuariosControl.deleteUsuario);  // borra un usuario

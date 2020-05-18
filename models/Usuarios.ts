@@ -64,7 +64,20 @@ usuarios.methods.toAuthJSON = function() {
     return {
         _id: this._id,
         username: this.username,
-        mail: this.mail
+        mail: this.mail,
+        sexo: this.sexo,
+        rutaimagen: this.rutaimagen,
+        ubicacion: this.ubicacion,
+        punto: this.punto,           //Punto de la ubicación        
+        edad: this.edad,
+        exp: this.exp,
+        valoracion: this.valoracion,
+        partidas:this.partidas,
+        torneos: this.torneos,
+        chats: this.chats, 
+        amigos: this.amigos, 
+        hash: this.hash,
+        salt: this.salt
     };
 };
 

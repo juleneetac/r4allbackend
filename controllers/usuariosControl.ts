@@ -69,8 +69,8 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
 exports.login = async function (req:Request,res:Response, next: NextFunction){ //logearse un usuario si la contraseña no coincide da error
             let usuario = req.body;
     //try {
-        console.log("username body: " +usuario.username)
-        console.log("contraseña body :" +usuario.password)
+        console.log("username body: " + usuario.username)
+        console.log("contraseña body :" + usuario.password)
         let finduser = await UsuariosSchema.findOne({ username: usuario.username })   
         console.log("Se intenta logear el usuario "+ usuario.username) //el que escribo ahora no el que ya tengo en la db
 

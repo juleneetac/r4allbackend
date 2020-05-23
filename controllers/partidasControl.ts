@@ -11,9 +11,15 @@ let mongoose = require('mongoose');
 
 
 exports.addPartida = async function (req, res){  //añadir una partida
-    let partida = req.body.partida;
-    let newPartida = new PartidasSchema (partida);
+    let partida = req.body;
+    
     try {
+        // newPartida.modo = partida.modo
+        // newPartida.organizador = partida.organizador
+        // newPartida.ubicacion = partida.ubicacion
+        // newPartida.punto = partida.punto
+        // newPartida.invitados = partida.invitados
+        let newPartida = new PartidasSchema (partida);    
         await newPartida.save();
         res.status(200).send({message: "Partida creado"})
     }

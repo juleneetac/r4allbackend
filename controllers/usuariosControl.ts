@@ -354,3 +354,85 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
         console.log(err);
     }
 };
+
+
+//funciones para guardar datos de facebook en la DB
+exports.registrarfacebook = async function (req, res){  //hay que hacerla todavia
+    let usuario = req.body;
+   
+        console.log("username "+usuario.username)
+        console.log("Mail "+ usuario.mail)
+        console.log("edad "+usuario.edad)
+        console.log("sexo "+usuario.sexo)
+        console.log("ubicacion "+usuario.ubicacion)
+        console.log(usuario.punto)
+        
+        //let foundUsername = await UsuariosSchema.findOne({username: usuario.username});
+        let foundMail = await UsuariosSchema.findOne({mail: usuario.mail});
+    
+        // if(foundUsername) {
+        //     return res.status(409).json({message: "Nombre de usuario ya registrado. Pon otro nombre"});
+        // }
+    
+        if(foundMail) {
+            return res.status(201).json({usuario: foundMail});
+        }
+    
+        else{
+            let newuser = new UsuariosSchema()
+            
+            
+            try{
+                
+                console.log(newuser);
+                newuser.username = usuario.username
+                newuser.mail = usuario.mail
+                newuser.edad = 0  //usuario.edad
+                newuser.sexo = usuario.sexo
+                newuser.ubicacion = ""//usuario.ubicacion
+                newuser.punto = usuario.punto
+                newuser.exp = 0;
+                newuser.valoracion = 0;
+                newuser.rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
+                //sendMail(newuser.mail, newuser.username);
+
+                return newuser.save()
+
+                .then(() => res.status(200).json({
+                    usuario: newuser.toAuthJSON()
+                }));
+                } 
+            catch (err) {
+                res.status(500).send(err);
+                console.log(err);
+                }
+      }
+ }
+
+ exports.updatefacebookUsuario = async function (req,res){  // mas o menos esta hecha
+    try{
+        let id = req.params.usuarioId;
+        let check = await UsuariosSchema.findById(id);
+        if(check){
+            let usuariofacebookEditado =  req.body;
+
+            console.log(usuariofacebookEditado);
+
+            const usuarioModificado = await UsuariosSchema.findByIdAndUpdate({ _id: id }, usuariofacebookEditado, {new: true});
+
+            console.log(usuarioModificado);
+            res.status(201).json(usuarioModificado);
+        }
+        else{
+            res.status(503).json({message: "Usuario no encontrado"});
+        }
+        
+    }
+    catch(err){
+        //console.log("Usuario editado "+ req.body.username)
+        res.status(501).send(err)
+        console.log(err);
+    }
+};
+        
+

@@ -122,8 +122,12 @@ io.on('connection', (socket) => {
     socket.on('disconnect', function() {
         console.log("desconexion tactica de socket: "+ username2)
         console.log(username2 + ' disconnected');
-        listaUsuarios.delete(username2);
-        io.emit('listaUsuarios', Array.from(username2));
+        if (username2)
+        {
+          listaUsuarios.delete(username2);
+          io.emit('listaUsuarios', Array.from(username2)); 
+        }
+        
     });
   });
 

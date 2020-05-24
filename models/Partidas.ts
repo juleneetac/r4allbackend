@@ -11,7 +11,7 @@ let partidas = new Schema({
     },
     ganador: String,
     organizador: String,
-    invitados: [String],
+    invitado: [String],
 });
 
 partidas.index({punto: "2dsphere"});    //Para poder buscar según ubicación

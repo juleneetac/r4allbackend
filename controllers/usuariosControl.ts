@@ -114,7 +114,7 @@ exports.getUsuario = async function (req, res){ //me da datos de un user especif
 //Get one user by username
 exports.getUsuariobyusername = async (req, res) => {
     try {
-      let user = await UsuariosSchema.findOne({username:req.param.username})
+      let user = await UsuariosSchema.findOne({username:req.params.username})
       console.log("encontrado: "+ user)
       if (!user) {
         return res.status(404).send({message: 'User not found'})
@@ -228,9 +228,9 @@ exports.getAllUsuarios = async function (req, res){
 exports.getPartidasde  = async function(req, res){
     let my_id = req.params.usuarioId;  //el req.params crea un parametro
     // req.params es para get
-    let partida = await UsuariosSchema.findById(my_id).populate('partidas', '_id'); 
+    let partida = await UsuariosSchema.findById(my_id).populate('partidas'); 
     //le paso el id de un usuario como parametro y me devuelve todas las partidas que ha jugado
-    console.log(partida);
+    console.log(partida)
     if(partida) {
         res.status(200).json(partida);
     } else {

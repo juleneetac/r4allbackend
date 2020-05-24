@@ -14,14 +14,8 @@ exports.addPartida = async function (req, res){  //añadir una partida
     let partida = req.body;
     
     try {
-        // newPartida.modo = partida.modo
-        // newPartida.organizador = partida.organizador
-        // newPartida.ubicacion = partida.ubicacion
-        // newPartida.punto = partida.punto
-        // newPartida.invitados = partida.invitados
+        
         let newPartida = new PartidasSchema (partida); 
-        //let organizador = await UsuariosSchema.find(req.body.organizador);
-        //let invitados   = await UsuariosSchema.find(req.body.invitados);
        
         await newPartida.save();
         console.log("partida :"+newPartida)
@@ -29,7 +23,7 @@ exports.addPartida = async function (req, res){  //añadir una partida
         console.log(id);
         let organizador= await UsuariosSchema.findOneAndUpdate({username:req.body.organizador},{$push:{partidas: id}},{new: true})//busca url que coincida
         console.log("organizador: "+ organizador)
-        let invitados= await UsuariosSchema.findOneAndUpdate({username :req.body.invitados},{$push:{partidas: id}},{new: true})
+        let invitados= await UsuariosSchema.findOneAndUpdate({username :req.body.invitado},{$push:{partidas: id}},{new: true})
         console.log("invitados: " + invitados)
         res.status(200).send({message: "Partida creado"})
     }

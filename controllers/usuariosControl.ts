@@ -114,7 +114,8 @@ exports.getUsuario = async function (req, res){ //me da datos de un user especif
 //Get one user by username
 exports.getUsuariobyusername = async (req, res) => {
     try {
-      let user = await UsuariosSchema.findOne(req.param.username)
+      let user = await UsuariosSchema.findOne({username:req.param.username})
+      console.log("encontrado: "+ user)
       if (!user) {
         return res.status(404).send({message: 'User not found'})
       } else {

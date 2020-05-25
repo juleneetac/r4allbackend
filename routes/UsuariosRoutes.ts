@@ -11,6 +11,7 @@ let usuariosControl = require('../controllers/usuariosControl');  //usuarios
 router.post('/register', usuariosControl.registrar);    // añade un usuario
 router.post('/login', usuariosControl.login);           // logea un usuario
 router.post('/getusrs', usuariosControl.getUsuarios);   //Devuelve la lista de Usuarios según los filtros del JSON
+router.post('/registerfacebook', usuariosControl.registrarfacebook);    // el usuario que se loggea con facebook se cogen sus datos para guardarlos en la db
 
 //GET
 router.get('/getusr/:usuarioId', usuariosControl.getUsuario); //me da un user en concreto con la id que le doy
@@ -24,6 +25,7 @@ router.get('/getamigbyuser/:usuarioId', usuariosControl.getAmigosde); // me da l
 //PUT
 router.put('/update/:usuarioId', usuariosControl.updateUsuario);
 router.put('/updaterutaimagen/:usuarioId', multer.single('rutaimagen'), usuariosControl.updateImagenUsuario);
+router.put('/updatefacebook/:usuarioId', usuariosControl.updatefacebookUsuario); //edita usuario que se loggea con facebook para no tener que poner la contraseña
 
 //DELETE
 router.delete('/deleteuser/:usuarioId', usuariosControl.deleteUsuario);  // borra un usuario

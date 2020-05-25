@@ -11,10 +11,20 @@ let mongoose = require('mongoose');
 
 
 exports.addPartida = async function (req, res){  //añadir una partida
-    let partida = req.body.partida;
-    let newPartida = new PartidasSchema (partida);
+    let partida = req.body;
+    
     try {
+        
+        let newPartida = new PartidasSchema (partida); 
+       
         await newPartida.save();
+        console.log("partida :"+newPartida)
+        let id = newPartida._id
+        console.log(id);
+        let organizador= await UsuariosSchema.findOneAndUpdate({username:req.body.organizador},{$push:{partidas: id}},{new: true})//busca url que coincida
+        console.log("organizador: "+ organizador)
+        let invitados= await UsuariosSchema.findOneAndUpdate({username :req.body.invitado},{$push:{partidas: id}},{new: true})
+        console.log("invitados: " + invitados)
         res.status(200).send({message: "Partida creado"})
     }
     catch(err){

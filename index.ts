@@ -10,7 +10,8 @@ import morgan = require("morgan");
 //
 import multer from './libs/multer';
 import path = require('path');
-
+const https = require("https"),
+  fs = require("fs");
 
 //Import routes
 let usuariosRouter = require("./routes/UsuariosRoutes"); //variable con la ruta usuarios
@@ -54,12 +55,20 @@ mongoose.connect(rutadb, {
 }).catch(function (err) {
     console.log("Database error: " + err.message);
 });
-
+const options = {
+    key: fs.readFileSync("../ser.key"),
+    cert: fs.readFileSync("../ser.pem")
+    
+  };
 //Make app listen on port 7000
-const port = 7000; // en el puerto que vamos a escuchar
-const server = app.listen(port, function () {
-    console.log('Listening on http://localhost:' + port);
-});
+//const port = 7000; // en el puerto que vamos a escuchar
+//const server = app.listen(port, function () {
+//    console.log('Listening on http://localhost:' + port);
+//});
+//const server =http.createServer(app).listen(80);
+console.log(options);
+
+const server = https.createServer(options, app).listen(7000);
 
 
 
@@ -113,8 +122,12 @@ io.on('connection', (socket) => {
     socket.on('disconnect', function() {
         console.log("desconexion tactica de socket: "+ username2)
         console.log(username2 + ' disconnected');
-        listaUsuarios.delete(username2);
-        io.emit('listaUsuarios', Array.from(username2));
+        if (username2)
+        {
+          listaUsuarios.delete(username2);
+          io.emit('listaUsuarios', Array.from(username2)); 
+        }
+        
     });
   });
 

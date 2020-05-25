@@ -10,8 +10,8 @@ let partidas = new Schema({
         coordinates: { type: [Number] }   //[latitud,longitud]
     },
     ganador: String,
-    organizador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },
-    invitados: [{ type: mongoose.Types.ObjectId, ref: 'usuarios' }]
+    organizador: String,
+    invitado: [String],
 });
 
 partidas.index({punto: "2dsphere"});    //Para poder buscar según ubicación

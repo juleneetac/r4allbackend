@@ -49,7 +49,7 @@ exports.registrar = async function (req, res){  //registrarse un usuario si el u
                 newuser.punto = usuario.punto
                 newuser.exp = 0;
                 newuser.valoracion = 0;
-                newuser.rutaimagen = 'uploads\\c12139b9-196e-4ee3-beb5-ce0438932898.png';
+                newuser.rutaimagen = 'uploads\\default.png';
                 //sendMail(newuser.mail, newuser.username);
 
                 return newuser.save()
@@ -211,8 +211,7 @@ exports.getUsuarios = async function (req, res){
 exports.getAllUsuarios = async function (req, res){
     //Devuelve todos los usuarios
     try{
-        let allusuarios = await UsuariosSchema.find().select('username');
-        console.log(allusuarios);
+        let allusuarios = await UsuariosSchema.find();
         if(allusuarios) {
             res.status(200).json(allusuarios);
         } else {

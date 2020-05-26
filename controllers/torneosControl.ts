@@ -79,11 +79,29 @@ exports.getTorneos = async function (req, res){
     }
 };
 
+exports.getAllTorneos = async function (req, res){
+    //Devuelve todos los torneos
+    try{
+        let alltorneos = await TorneosSchema.find();
+        if(alltorneos) {
+            res.status(200).json(alltorneos);
+        } else {
+            res.status(404).send({message: 'Error buscando Torneos'});
+        }
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
+    }
+};
+
 exports.addTorneo = async function (req, res){
     try{
         //------------- COMPROBAR AUTORIDAD: Queda Pendiente -------------------//
         let newTorneo = new TorneosSchema();
         newTorneo.nombre = req.body.nombre;
+        newTorneo.descripcion = req.body.descripcion;
+        newTorneo.sitioweb = req.body.sitioweb;
         newTorneo.genero = req.body.genero;
         newTorneo.pistacubierta = req.body.pistacubierta;
         newTorneo.tipopista = req.body.tipopista;
@@ -96,13 +114,47 @@ exports.addTorneo = async function (req, res){
         newTorneo.premio = req.body.premio;
 
         await newTorneo.save();
-        res.status(200).send("Torneo creado")
+        res.status(200).send(newTorneo);
     }
     catch(err){
         res.status(500).send(err);
         console.log(err);
     }
 };
+
+exports.getParticipantesde  = async function(req, res){
+    //Devuelve los Participantes de un Torneo
+    let torneoId = req.params.torneoId;
+    let partic = await TorneosSchema.findById(torneoId).populate('participantes'); 
+    //le paso el id de un usuario como parametro y me devuelve todas las partidas que ha jugado
+    console.log(partic);
+    if(partic) {
+        res.status(200).json(partic);
+    } else {
+        res.status(424).send({message: 'Error buscando partidas'});
+    }
+};
+
+exports.updateTorneo = async function(req,res){
+    try{
+        //------------- COMPROBAR AUTORIDAD: Queda Pendiente -------------------//
+        let torneoid = req.params.torneoId;
+        let checktorneo = await TorneosSchema.findById(torneoid);
+        if(checktorneo){
+            let torneoEditado =  req.body;
+            let torneoModificado = await TorneosSchema.findByIdAndUpdate( {'_id' : torneoid}, torneoEditado, {new: true});
+            console.log(torneoModificado);
+            res.status(201).json(torneoModificado);
+        } 
+        else{
+            res.status(404).json({message: "Torneo no encontrado"});
+        }
+    }
+    catch(err){
+        res.status(500).send(err);
+        console.log(err);
+    }
+}
 
 exports.addParticipante = async function(req,res){
     try{
@@ -149,30 +201,20 @@ exports.addParticipante = async function(req,res){
     }
 }
 
-exports.getParticipantesde  = async function(req, res){
-    //Devuelve los Participantes de un Torneo
-    let torneoId = req.params.torneoId;
-    let partic = await TorneosSchema.findById(torneoId).populate('participantes'); 
-    //le paso el id de un usuario como parametro y me devuelve todas las partidas que ha jugado
-    console.log(partic);
-    if(partic) {
-        res.status(200).json(partic);
-    } else {
-        res.status(424).send({message: 'Error buscando partidas'});
-    }
-};
-
-exports.editTorneo = async function(req,res){
+exports.addGanador = async function(req,res){
     try{
-        /*let torneoid = req.body._id;
+        //------------- COMPROBAR AUTORIDAD: Queda Pendiente -------------------//
+        let torneoid = req.params.torneoId;
         let checktorneo = await TorneosSchema.findById(torneoid);
         if(checktorneo){
-            await TorneosSchema.UpdateOne( {'_id':torneoid}, );
-            res.status(201).json("Torneo actualizado correctamente");
+            checktorneo.ganador = req.body._id;
+            let torneoModificado = await TorneosSchema.findByIdAndUpdate( {'_id' : torneoid}, checktorneo, {new: true});
+            console.log(torneoModificado);
+            res.status(201).json({"message": `Ganador del Torneo ${torneoid} es ${checktorneo.ganador}`});
         } 
         else{
-            res.status(404).json("Torneo no encontrado");
-        }*/
+            res.status(404).json({message: "Torneo no encontrado"});
+        }
     }
     catch(err){
         res.status(500).send(err);

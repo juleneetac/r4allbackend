@@ -4,13 +4,15 @@ import mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 let torneos = new Schema({
     nombre: String,         //Nombre del Torneo
+    descripcion: String,    
+    sitioweb: String,       //Sitio web del Organizador o del torneo
     modo: String,           //Individuales o Dobles
     genero: String,         //m o f
     pistacubierta: Boolean, //Cubierta o no
     tipopista: String,      //Hierba, TierraBatida, etc.
     tipobola: String,       //Introducido por el Organizador
     ubicacion: String,      //Nombre de la ubicación (Por ejemplo, Real Club de Tenis)
-    punto: {            //Punto de la ubicación
+    punto: {                //Punto de la ubicación
         type: { type: String },           //"Point"
         coordinates: { type: [Number] }   //[latitud,longitud]
     },

@@ -11,6 +11,6 @@ router.post('/addprd', partidasControl.addPartida); //añade una partida
 router.get('/getprts', partidasControl.getPartidas);  //me da todas las partidas
 
 //put
-
+router.put('/updprd/:id', partidasControl.updatePartida);  //me da todas las partidas
 //delete
 module.exports = router;

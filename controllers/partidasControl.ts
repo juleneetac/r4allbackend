@@ -42,3 +42,17 @@ exports.getPartidas = async function (req, res){   //me da el todas las partidas
         res.status(424).send({message: 'partida error'});
     }
 }
+exports.updatePartida = async function (req,res){
+    try{
+        console.log (req.body)
+        let _id= req.params.id
+        console.log(_id)
+        const partidaModificada = await PartidasSchema.findByIdAndUpdate({ _id: _id },  req.body, {new: true});
+        console.log(partidaModificada);
+        res.status(201).json(partidaModificada);
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
+    }
+};

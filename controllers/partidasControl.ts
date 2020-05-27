@@ -21,11 +21,15 @@ exports.addPartida = async function (req, res){  //añadir una partida
         console.log("partida :"+newPartida)
         let id = newPartida._id
         console.log(id);
-        let organizador= await UsuariosSchema.findOneAndUpdate({username:req.body.organizador},{$push:{partidas: id}},{new: true})//busca url que coincida
-        console.log("organizador: "+ organizador)
-        let invitados= await UsuariosSchema.findOneAndUpdate({username :req.body.invitado},{$push:{partidas: id}},{new: true})
-        console.log("invitados: " + invitados)
-        res.status(200).send({message: "Partida creado"})
+        let organizador = await UsuariosSchema.findOneAndUpdate({username:req.body.organizador},{$push:{partidas: id}},{new: true})//busca url que coincida
+        console.log("organizador: "+ organizador);
+
+        let invitados: string[] = req.body.invitados;
+        invitados.forEach(async invitado => {
+            console.log(invitado);
+            await UsuariosSchema.findOneAndUpdate({username: invitado},{$push:{partidas: id}},{new: true});
+        });
+        res.status(200).send(newPartida);
     }
     catch(err){
         res.status(500).send(err);
@@ -42,6 +46,7 @@ exports.getPartidas = async function (req, res){   //me da el todas las partidas
         res.status(424).send({message: 'partida error'});
     }
 }
+
 exports.updatePartida = async function (req,res){
     try{
         console.log (req.body)

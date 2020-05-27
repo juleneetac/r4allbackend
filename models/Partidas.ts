@@ -9,9 +9,9 @@ let partidas = new Schema({
         type: { type: String },           //"Point"
         coordinates: { type: [Number] }   //[latitud,longitud]
     },
-    ganador: String,
+    ganador: String,    //Si es null no saldría en el Mongo e indicaría que el Torneo está activo 
     organizador: String,
-    invitado: [String],
+    invitados: [String]
 });
 
 partidas.index({punto: "2dsphere"});    //Para poder buscar según ubicación

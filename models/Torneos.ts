@@ -12,9 +12,14 @@ let torneos = new Schema({
     tipopista: String,      //Hierba, TierraBatida, etc.
     tipobola: String,       //Introducido por el Organizador
     ubicacion: String,      //Nombre de la ubicación (Por ejemplo, Real Club de Tenis)
-    punto: {                //Punto de la ubicación
-        type: { type: String },           //"Point"
-        coordinates: { type: [Number] }   //[latitud,longitud]
+    punto: {            //Punto de la ubicación
+        type: { 
+            type: String, 
+            default: "Point" 
+        },           
+        coordinates: { 
+            type: [Number] //[longitud,latitud]
+        }
     },
     ganador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },    //Si es null no saldría en el Mongo e indicaría que el Torneo está activo
     inscripcion: Number,    //Precio de inscripcion

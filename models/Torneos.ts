@@ -16,11 +16,13 @@ let torneos = new Schema({
         type: { type: String },           //"Point"
         coordinates: { type: [Number] }   //[latitud,longitud]
     },
-    ganador: { type: mongoose.Types.ObjectId, ref: 'usuarios' },    //Si es null no saldría en el Mongo e indicaría que el Torneo está activo
+    ganador: { type: mongoose.Types.ObjectId, ref: 'participantes' },    //Si es null no saldría en el Mongo e indicaría que el Torneo está activo
+    ganador2: { type: mongoose.Types.ObjectId, ref: 'participantes' },   //Pareja del ganador (en caso del Torneo dobles)
     inscripcion: Number,    //Precio de inscripcion
     premio: String,         
     organizador: String,    //Por ejemplo, Club de Tenis, Federacion, Usuario...
-    participantes: [{ type: mongoose.Types.ObjectId, ref: 'participantes' }]
+    participantes: [{ type: mongoose.Types.ObjectId, ref: 'participantes' }],
+    capacidad: Number       //Numero maximo de participantes
 });
 
 torneos.index({punto: "2dsphere"});    //Para poder buscar según ubicación

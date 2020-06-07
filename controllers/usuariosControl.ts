@@ -238,14 +238,11 @@ exports.getPartidasde  = async function(req, res){
 };
 
 exports.getTorneosde  = async function(req, res){ //me da los torneos de un jugador
-    let my_id = req.params.usuarioId;  //el req.params crea un parametro 
-    // req.params es para get
-    let torneo = await UsuariosSchema.findById(my_id).populate('torneos', '_id'); 
-    console.log(torneo);
+    let torneo = await UsuariosSchema.findById(req.params.usuarioId).populate('torneos'); 
     if(torneo) {
         res.status(200).json(torneo);
     } else {
-        res.status(404).send({message: 'Error buscando torneos'});
+        res.status(404).json('Error buscando torneos');
     }
 };
 

@@ -240,7 +240,7 @@ exports.getPartidasde  = async function(req, res){
 exports.getTorneosde  = async function(req, res){ //me da los torneos de un jugador
     let my_id = req.params.usuarioId;  //el req.params crea un parametro 
     // req.params es para get
-    let torneo = await UsuariosSchema.findById(my_id).populate('torneos', '_id'); 
+    let torneo = await UsuariosSchema.findById(my_id).populate('torneos');
     console.log(torneo);
     if(torneo) {
         res.status(200).json(torneo);
@@ -434,5 +434,3 @@ exports.registrarfacebook = async function (req, res){  //hay que hacerla todavi
         console.log(err);
     }
 };
-        
-

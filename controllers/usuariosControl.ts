@@ -138,61 +138,46 @@ exports.getUsuarios = async function (req, res){
         let query:LooseObject = {};
 
         if(flags[0]){
-            let { username } = req.body;
-            Object.assign(query, {'username': { "$regex": username, "$options": "i" }});
+            let { punto, radio } = req.body;
+            if(radio < 100000) { //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'punto': { 
+                    $near: {
+                      $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
+                      $maxDistance: radio
+                    }
+                }
+                });
+            }
         }
         if(flags[1]){
-            let { punto, radio } = req.body;
-            Object.assign(query, {'punto':        
-            { $near:
-                {
-                  $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
-                  $maxDistance: radio
-                }
-             }
-            })
-        }
-        if(flags[2]){
             let { sexo } = req.body;
             Object.assign(query, {'sexo': {'$regex' : `^${sexo}$`, '$options' : 'i'}});
         }
-        let edadFlag: number = flags[3];
-        if(edadFlag != 0){
+        if(flags[2]){
             let { edad } = req.body;
-            if (edadFlag == 1){
+            if(edad[1] == 100){ //Si llega al límite se buscan también los que lo superen
                 Object.assign(query, {'edad': {$gte: edad[0]}});
             }
-            else if (edadFlag == 2){
-                Object.assign(query, {'edad': {$lte: edad[1]}});
-            }
-            else if (edadFlag == 3){
-                Object.assign(query, {"edad":  {$gte: edad[0], $lte: edad[1]}});
+            else{
+                Object.assign(query, {'edad': {$gte: edad[0], $lte: edad[1]}});
             }
         }
-        let expFlag: number = flags[4];
-        if(expFlag != 0){
+        if(flags[3]){
             let { exp } = req.body;
-            if (expFlag == 1){
+            if(exp[1] == 1000){ //Si llega al límite se buscan también los que lo superen
                 Object.assign(query, {'exp': {$gte: exp[0]}});
             }
-            else if (expFlag == 2){
-                Object.assign(query, {'exp': {$lte: exp[1]}});
-            }
-            else if (expFlag == 3){
-                Object.assign(query, {"exp":  {$gte: exp[0], $lte: exp[1]}});
+            else{
+                Object.assign(query, {'exp': {$gte: exp[0], $lte: exp[1]}});
             }
         }
-        let valoracionFlag: number = flags[5];
-        if(valoracionFlag != 0){
+        if(flags[4]){
             let { valoracion } = req.body;
-            if (valoracionFlag == 1){
-                Object.assign(query, {'valoracion': {$gte: valoracion[0]}});
+            if(valoracion[1] == 1000){ //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'exp': {$gte: valoracion[0]}});
             }
-            else if (valoracionFlag== 2){
-                Object.assign(query, {'valoracion': {$lte: valoracion[1]}});
-            }
-            else if (valoracionFlag == 3){
-                Object.assign(query, {"valoracion":  {$gte: valoracion[0], $lte: valoracion[1]}});
+            else{
+                Object.assign(query, {'exp': {$gte: valoracion[0], $lte: valoracion[1]}});
             }
         }
 

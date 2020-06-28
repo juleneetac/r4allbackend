@@ -32,14 +32,15 @@ exports.getTorneos = async function (req, res){
 
         if(flags[0]){
             let { punto, radio } = req.body;
-            Object.assign(query, {'punto':        
-            { $near:
-                {
-                  $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
-                  $maxDistance: radio
+            if(radio < 100000) { //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'punto': { 
+                    $near: {
+                      $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
+                      $maxDistance: radio
+                    }
                 }
-             }
-            })
+                });
+            }
         }
         if(flags[1]){
             let { pistacubierta } = req.body;
@@ -50,20 +51,37 @@ exports.getTorneos = async function (req, res){
             Object.assign(query, {'tipopista': {'$regex' : `^${tipopista}$`, '$options' : 'i'}});
         }
         if(flags[3]){
+            let { tipobola } = req.body;
+            Object.assign(query, {'tipobola': { "$regex": tipobola, "$options": "i" }});
+        }
+        if(flags[4]){
             let { modo } = req.body;
             Object.assign(query, {'modo': {'$regex' : `^${modo}$`, '$options' : 'i'}});
         }
-        let participantesFlag: number = flags[4];
-        if(participantesFlag != 0){
-            let { participantes } = req.body;
-            if (participantesFlag == 1){
-                Object.assign(query, { $where: `this.participantes.length >= ${participantes[0]}`} );
+        if(flags[5]){
+            let { genero } = req.body;
+            Object.assign(query, {'genero': {'$regex' : `^${genero}$`, '$options' : 'i'}});
+        }
+        if(flags[6]){
+            let { organizador } = req.body;
+            Object.assign(query, {'organizador': { "$regex": organizador, "$options": "i" }});
+        }
+        if(flags[7]){
+            let { inscripcion } = req.body;
+            if(inscripcion[1] == 1000){ //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'inscripcion': {$gte: inscripcion[0]}});
             }
-            else if (participantesFlag== 2){
-                Object.assign(query, { $where: `this.participantes.length <= ${participantes[1]}`} );
+            else{
+                Object.assign(query, {'inscripcion': {$gte: inscripcion[0], $lte: inscripcion[1]}});
             }
-            else if (participantesFlag == 3){
-                Object.assign(query, { $where: `this.participantes.length >= ${participantes[0]} && this.participantes.length <= ${participantes[1]}`} );
+        }
+        if(flags[8]){
+            let { capacidad } = req.body;
+            if(capacidad[1] == 200){ //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'capacidad': {$gte: capacidad[0]}});
+            }
+            else{
+                Object.assign(query, {'capacidad': {$gte: capacidad[0], $lte: capacidad[1]}});
             }
         }
 

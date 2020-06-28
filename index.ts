@@ -17,7 +17,7 @@ const https = require("https"),
 let usuariosRouter = require("./routes/UsuariosRoutes"); //variable con la ruta usuarios
 let torneosRouter = require("./routes/TorneosRoutes"); //variable con la ruta torneos
 let partidasRouter = require("./routes/PartidasRoutes"); //variable con la ruta partidas
-let participantesRouter = require("./routes/ParticipantesRoutes"); //variable con la ruta participantes
+//let participantesRouter = require("./routes/ParticipantesRoutes"); //variable con la ruta participantes
 let mensajesRouter = require("./routes/MensajesRoutes"); //variable con la ruta mensajes
 let chatsRouter = require("./routes/ChatsRoutes"); //variable con la ruta chats
 
@@ -36,7 +36,7 @@ app.use('/uploads', express.static(path.resolve('uploads')));
 app.use('/usr', usuariosRouter);   //students
 app.use('/trn', torneosRouter);   //subjects
 app.use('/prd', partidasRouter);   //students
-app.use('/prantes', participantesRouter);   //subjects
+//app.use('/prantes', participantesRouter);   //subjects
 app.use('/msg', mensajesRouter);   //students
 app.use('/cht', chatsRouter);   //subjects
 

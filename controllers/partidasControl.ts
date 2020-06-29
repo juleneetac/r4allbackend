@@ -23,7 +23,7 @@ exports.addPartida = async function (req, res){  //añadir una partida
         console.log(id);
         let organizador = await UsuariosSchema.findOneAndUpdate({username:req.body.organizador},{$push:{partidas: id}},{new: true})//busca url que coincida
         console.log("organizador: "+ organizador);
-
+        
         let invitados: string[] = req.body.invitados;
         invitados.forEach(async invitado => {
             console.log(invitado);
@@ -53,6 +53,8 @@ exports.updatePartida = async function (req,res){
         let _id= req.params.id
         console.log(_id)
         const partidaModificada = await PartidasSchema.findByIdAndUpdate({ _id: _id },  req.body, {new: true});
+        let usuarioSumaExperiencia = await UsuariosSchema.findOne({ username: req.body.ganador }) //busco el jugador al que le subo la experiencia
+        await UsuariosSchema.findByIdAndUpdate({ _id: usuarioSumaExperiencia._id },  {exp: usuarioSumaExperiencia.exp+10}, {new: true}); // le sumo 10 de experiencia
         console.log(partidaModificada);
         res.status(201).json(partidaModificada);
     }

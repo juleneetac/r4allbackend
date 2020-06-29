@@ -223,26 +223,13 @@ exports.getPartidasde  = async function(req, res){
 };
 
 exports.getTorneosde  = async function(req, res){ //me da los torneos de un jugador
-    
-    let usuario = await UsuariosSchema.findById(req.params.usuarioId).populate('torneos'); 
-    //let torneos = usuario.torneos;
 
-    /* for (let i = 0; i < usuario.torneos.length; i++) {
-        //Obtener el/los ganadores 
-        if(usuario.torneos[i].ganador !== undefined){
-            if(usuario.torneos[i].modo == 'i'){
-                usuario.torneos[i] = await TorneosSchema.findById(usuario.torneos[i]._id).populate('ganador');
-            }
-            else{
-                usuario.torneos[i] = await TorneosSchema.findById(usuario.torneos[i]._id).populate('ganador').populate('ganador2');
-            }
-        }
-    } */
+    let my_id = req.params.usuarioId;  //el req.params crea un parametro 
+    // req.params es para get
+    let torneo = await UsuariosSchema.findById(my_id).populate('torneos'); 
+    if(torneo) {
+        res.status(200).json(torneo);
 
-    //console.log("GetTorneosDe", usuario.torneos[0].ganador, usuario.torneos[0].ganador2, usuario.torneos[1].ganador, usuario.torneos[1].ganador );
-
-    if(usuario) {
-        res.status(200).json(usuario);
     } else {
         res.status(404).json('Error buscando torneos');
     }

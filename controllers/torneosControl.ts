@@ -181,6 +181,40 @@ exports.getParticipantesde  = async function(req, res){
     }
 };
 
+exports.getGanadores = async function(req, res){ //me da los torneos de un jugador
+    try{
+        let torneo = await TorneosSchema.findById(req.params.torneoID);
+        let ganadores = [];
+    
+        //Obtener el/los ganadores 
+        if(torneo){
+            if(torneo.ganador !== undefined){
+                if(torneo.modo == 'i'){
+                   let torneoganador = await TorneosSchema.findById(req.params.torneoID).populate('ganador');
+                   ganadores.push(torneoganador.ganador);
+                }
+                else{
+                    let torneoganador = await TorneosSchema.findById(req.params.torneoID).populate('ganador').populate('ganador2');
+                    ganadores.push(torneoganador.ganador);
+                    ganadores.push(torneoganador.ganador2);
+                }
+            }
+            else{
+                res.status(404).json('El Torneo aún no ha acabado');
+            }
+        } 
+        if(torneo) {
+            res.status(200).json(ganadores);
+        } else {
+            res.status(404).json('Error buscando torneos');
+        }
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
+    }
+};
+
 exports.addTorneo = async function (req, res){
     try{
         //------------- COMPROBAR AUTORIDAD: Queda Pendiente -------------------//

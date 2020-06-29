@@ -15,6 +15,7 @@ router.get('/gettrn/:torneoId', torneosControl.getTorneo);  //me da todos los da
 router.get('/getalltrns', torneosControl.getAllTorneos);   // me da todos los Torneos
 router.get('/getpartic', torneosControl.getParticipante);  //Participante de un Usuario dentro de un Torneo   
 router.get('/getparticbytrn/:torneoId', torneosControl.getParticipantesde);  //me da los participantes de un torneo
+router.get('/getganadores/:torneoID', torneosControl.getGanadores);    //Devuelve los ganadores de un Torneo
 
 //PUT
 router.put('/update/:torneoId', torneosControl.updateTorneo);    //Editar o Actualizar un Torneo

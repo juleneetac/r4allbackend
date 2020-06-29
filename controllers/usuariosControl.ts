@@ -224,6 +224,19 @@ exports.getPartidasde  = async function(req, res){
 
 exports.getTorneosde  = async function(req, res){ //me da los torneos de un jugador
     let torneo = await UsuariosSchema.findById(req.params.usuarioId).populate('torneos'); 
+
+    for (let i = 0; i < torneo.length; i++) {
+        //Obtener el/los ganadores 
+        if(torneo.torneos[i].ganador !== undefined){
+            if(torneo.torneos[i].modo == 'i'){
+                torneo.torneos[i] = await TorneosSchema.findById(torneo.torneos[i]._id).populate('ganador');
+            }
+            else{
+                torneo.torneos[i] = await TorneosSchema.findById(torneo.torneos[i]._id).populate('ganador').populate('ganador2');
+            }
+        }
+    }
+
     if(torneo) {
         res.status(200).json(torneo);
     } else {
@@ -246,7 +259,7 @@ exports.getChatsde  = async function(req, res){  //me da los chats de un jugador
 exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugador
     let my_id = req.params.usuarioId;  //el req.params crea un parametro
     // req.params es para get
-    let amigo = await UsuariosSchema.findById(my_id).populate('amigos', 'username'); // me da su nombre
+    let amigo = await UsuariosSchema.findById(my_id).populate('amigos'); // me da su nombre
     console.log(amigo);
     if(amigo) {
         res.status(200).json(amigo);
@@ -255,6 +268,30 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
         res.status(404).send({message: 'Error al ver tus amigos'});
     }
 };
+
+exports.addAmigo = async function (req,res){
+    try{
+        let { _idUsuario, _idAmigo } = req.body;
+        let check = await UsuariosSchema.findById(_idAmigo);
+        if(check){
+            await UsuariosSchema.updateOne( {'_id': _idUsuario}, {$addToSet:{'amigos': req.body._idAmigo}}).then(async (data) => {
+                if(data.nModified == 1){
+                    res.status(201).json(`Usuario ${_idAmigo} añadido correctamente a tu lista de amigos`);
+                }
+                else{
+                    res.status(409).json(`El Usuario ${_idAmigo} ya está en tu lista de amigos`);
+                }
+            });
+        }
+        else{
+            res.status(404).json({"message": "Usuario no encontrado"});
+        }
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
+    }
+}
 
 exports.updateUsuario = async function (req,res){
     try{
@@ -326,9 +363,9 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
         let my_id = req.params.usuarioId;
         let user = await UsuariosSchema.findByIdAndRemove(my_id);
         if(!user){
-            return res.status(404).send({message: 'user not found'})
+            return res.status(404).json('Usuario no encontrado');
         }else{
-            res.status(200).send({message:'User deleted successfully'})
+            res.status(200).json(`Usuario ${my_id} eliminado correctamente`);
         }
     }
     catch(err){

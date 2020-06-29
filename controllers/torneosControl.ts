@@ -88,6 +88,19 @@ exports.getTorneos = async function (req, res){
         console.log(query);
 
         let torneos = await TorneosSchema.find(query);
+
+        for (let i = 0; i < torneos.length; i++) {
+            //Obtener el/los ganadores 
+            if(torneos[i].ganador !== undefined){
+                if(torneos.modo == 'i'){
+                    torneos[i] = await TorneosSchema.findById(torneos[i]._id).populate('ganador');
+                }
+                else{
+                    torneos[i] = await TorneosSchema.findById(torneos[i]._id).populate('ganador').populate('ganador2');
+                }
+            }
+        }
+        
         res.status(200).json(torneos);
 
     }
@@ -101,6 +114,19 @@ exports.getAllTorneos = async function (req, res){
     //Devuelve todos los torneos
     try{
         let alltorneos = await TorneosSchema.find();
+
+        for (let i = 0; i < alltorneos.length; i++) {
+            //Obtener el/los ganadores 
+            if(alltorneos[i].ganador !== undefined){
+                if(alltorneos.modo == 'i'){
+                    alltorneos[i] = await TorneosSchema.findById(alltorneos[i]._id).populate('ganador');
+                }
+                else{
+                    alltorneos[i] = await TorneosSchema.findById(alltorneos[i]._id).populate('ganador').populate('ganador2');
+                }
+            }
+        }
+
         if(alltorneos) {
             res.status(200).json(alltorneos);
         } else {

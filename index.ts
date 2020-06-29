@@ -68,6 +68,8 @@ const options = {
 //const server =http.createServer(app).listen(80);
 console.log(options);
 
+//let torneos = TorneosSchema.find('nombre') SI VES ESTO BORRALO
+//let salastorneos : Map<string, string> = new Map(); SI VES ESTO BORRALO
 const server = https.createServer(options, app).listen(7000);
 
 
@@ -92,7 +94,6 @@ io.on('connection', (socket) => {
       socket.username = username;
       console.log('user connected socket' + socket.username);
       username2 = username;     //puede que haya que quitar esta funcion porque no es una sala
-      console.log(socket.username);
       io.emit('users-changed', {user: username, event: 'joined'});    
       listaUsuarios.set(username, socket.id);
     });
@@ -107,17 +108,29 @@ io.on('connection', (socket) => {
             io.to(<string>listaUsuarios.get(data.destination)).emit('message', {message, username2});
         } 
         else {
-            console.log("error en el chat");
-            
-        }
+            console.log("mensage va a una sala");//esto podria valer como check de que es una sala
+            io.to(data.destination).emit('message',{message, username2});
+
+       
+          }
     });
 
     socket.on('giveMeUserList', function () {
-        console.log("antesemit")
         socket.emit('listaUsuarios', Array.from(listaUsuarios));
-        console.log("despuesemit")
     });
+    socket.on('joinSala', function (data) {
+      console.log("se ha unido esto: "+ socket.id)
+      socket.join(data.nombresala);     
+      //socket.emit('listaUsuarios', Array.from(listaUsuarios));
+    });
+    socket.on('chatsala', function (data) {
+      //console.log(data)     
+      //io.to(data).emit('mensajesala',{data.mensaje,data.user});
+      //socket.emit('listaUsuarios', Array.from(listaUsuarios));
+    });
+ 
 
+  
     //On a disconnection, delete its socketId from the hashMap
     socket.on('disconnect', function() {
         console.log("desconexion tactica de socket: "+ username2)

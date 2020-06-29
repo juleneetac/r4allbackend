@@ -6,6 +6,6 @@ let mensajes = new Schema({
     author: String,
     destination: String, //quien envia el mensaje
     mensaje: String,
-    date: Date
+    date: String
 });
 module.exports = mongoose.model('mensajes', mensajes);

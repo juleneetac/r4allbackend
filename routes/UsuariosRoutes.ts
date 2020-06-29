@@ -12,6 +12,7 @@ router.post('/register', usuariosControl.registrar);    // añade un usuario
 router.post('/login', usuariosControl.login);           // logea un usuario
 router.post('/getusrs', usuariosControl.getUsuarios);   //Devuelve la lista de Usuarios según los filtros del JSON
 router.post('/registerfacebook', usuariosControl.registrarfacebook);    // el usuario que se loggea con facebook se cogen sus datos para guardarlos en la db
+router.post('/addamigo', usuariosControl.addAmigo);
 
 //GET
 router.get('/getusr/:usuarioId', usuariosControl.getUsuario); //me da un user en concreto con la id que le doy

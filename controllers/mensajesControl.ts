@@ -8,14 +8,15 @@ let ParticipantesSchema = require('../models/Participantes');
 let MensajesSchema = require('../models/Mensajes');
 let ChatsSchema = require('../models/Chats');
 let mongoose = require('mongoose');
+import * as moment from 'moment';
 
 
 exports.addMensaje = async function(req, res) {
     const author: string = req.body.author;
     const destination: string = req.body.destination;
     const mensaje: string = req.body.mensaje;
-    const date: Date = new Date();
-
+    const date: string = moment().calendar();
+    console.log(date)
     const msg = new MensajesSchema({author, destination, mensaje, date});
     await msg.save().then((data) => {
         res.status(201).json(data);

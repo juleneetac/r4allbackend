@@ -23,7 +23,7 @@ exports.addPartida = async function (req, res){  //añadir una partida
         console.log(id);
         let organizador = await UsuariosSchema.findOneAndUpdate({username:req.body.organizador},{$push:{partidas: id}},{new: true})//busca url que coincida
         console.log("organizador: "+ organizador);
-
+        
         let invitados: string[] = req.body.invitados;
         invitados.forEach(async invitado => {
             console.log(invitado);

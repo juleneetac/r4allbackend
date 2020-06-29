@@ -138,61 +138,46 @@ exports.getUsuarios = async function (req, res){
         let query:LooseObject = {};
 
         if(flags[0]){
-            let { username } = req.body;
-            Object.assign(query, {'username': { "$regex": username, "$options": "i" }});
+            let { punto, radio } = req.body;
+            if(radio < 100000) { //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'punto': { 
+                    $near: {
+                      $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
+                      $maxDistance: radio
+                    }
+                }
+                });
+            }
         }
         if(flags[1]){
-            let { punto, radio } = req.body;
-            Object.assign(query, {'punto':        
-            { $near:
-                {
-                  $geometry: { type: punto.type,  coordinates: [ punto.coordinates[0] , punto.coordinates[1] ] },
-                  $maxDistance: radio
-                }
-             }
-            })
-        }
-        if(flags[2]){
             let { sexo } = req.body;
             Object.assign(query, {'sexo': {'$regex' : `^${sexo}$`, '$options' : 'i'}});
         }
-        let edadFlag: number = flags[3];
-        if(edadFlag != 0){
+        if(flags[2]){
             let { edad } = req.body;
-            if (edadFlag == 1){
+            if(edad[1] == 100){ //Si llega al límite se buscan también los que lo superen
                 Object.assign(query, {'edad': {$gte: edad[0]}});
             }
-            else if (edadFlag == 2){
-                Object.assign(query, {'edad': {$lte: edad[1]}});
-            }
-            else if (edadFlag == 3){
-                Object.assign(query, {"edad":  {$gte: edad[0], $lte: edad[1]}});
+            else{
+                Object.assign(query, {'edad': {$gte: edad[0], $lte: edad[1]}});
             }
         }
-        let expFlag: number = flags[4];
-        if(expFlag != 0){
+        if(flags[3]){
             let { exp } = req.body;
-            if (expFlag == 1){
+            if(exp[1] == 1000){ //Si llega al límite se buscan también los que lo superen
                 Object.assign(query, {'exp': {$gte: exp[0]}});
             }
-            else if (expFlag == 2){
-                Object.assign(query, {'exp': {$lte: exp[1]}});
-            }
-            else if (expFlag == 3){
-                Object.assign(query, {"exp":  {$gte: exp[0], $lte: exp[1]}});
+            else{
+                Object.assign(query, {'exp': {$gte: exp[0], $lte: exp[1]}});
             }
         }
-        let valoracionFlag: number = flags[5];
-        if(valoracionFlag != 0){
+        if(flags[4]){
             let { valoracion } = req.body;
-            if (valoracionFlag == 1){
-                Object.assign(query, {'valoracion': {$gte: valoracion[0]}});
+            if(valoracion[1] == 1000){ //Si llega al límite se buscan también los que lo superen
+                Object.assign(query, {'exp': {$gte: valoracion[0]}});
             }
-            else if (valoracionFlag== 2){
-                Object.assign(query, {'valoracion': {$lte: valoracion[1]}});
-            }
-            else if (valoracionFlag == 3){
-                Object.assign(query, {"valoracion":  {$gte: valoracion[0], $lte: valoracion[1]}});
+            else{
+                Object.assign(query, {'exp': {$gte: valoracion[0], $lte: valoracion[1]}});
             }
         }
 
@@ -238,13 +223,15 @@ exports.getPartidasde  = async function(req, res){
 };
 
 exports.getTorneosde  = async function(req, res){ //me da los torneos de un jugador
+
     let my_id = req.params.usuarioId;  //el req.params crea un parametro 
     // req.params es para get
     let torneo = await UsuariosSchema.findById(my_id).populate('torneos'); 
     if(torneo) {
         res.status(200).json(torneo);
+
     } else {
-        res.status(404).send({message: 'Error buscando torneos'});
+        res.status(404).json('Error buscando torneos');
     }
 };
 
@@ -263,7 +250,7 @@ exports.getChatsde  = async function(req, res){  //me da los chats de un jugador
 exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugador
     let my_id = req.params.usuarioId;  //el req.params crea un parametro
     // req.params es para get
-    let amigo = await UsuariosSchema.findById(my_id).populate('amigos', 'username'); // me da su nombre
+    let amigo = await UsuariosSchema.findById(my_id).populate('amigos'); // me da su nombre
     console.log(amigo);
     if(amigo) {
         res.status(200).json(amigo);
@@ -272,6 +259,30 @@ exports.getAmigosde  = async function(req, res){ //me da los amigos de un jugado
         res.status(404).send({message: 'Error al ver tus amigos'});
     }
 };
+
+exports.addAmigo = async function (req,res){
+    try{
+        let { _idUsuario, _idAmigo } = req.body;
+        let check = await UsuariosSchema.findById(_idAmigo);
+        if(check){
+            await UsuariosSchema.updateOne( {'_id': _idUsuario}, {$addToSet:{'amigos': req.body._idAmigo}}).then(async (data) => {
+                if(data.nModified == 1){
+                    res.status(201).json(`Usuario ${_idAmigo} añadido correctamente a tu lista de amigos`);
+                }
+                else{
+                    res.status(409).json(`El Usuario ${_idAmigo} ya está en tu lista de amigos`);
+                }
+            });
+        }
+        else{
+            res.status(404).json({"message": "Usuario no encontrado"});
+        }
+    }
+    catch(err){
+        res.status(500).send(err)
+        console.log(err);
+    }
+}
 
 exports.updateUsuario = async function (req,res){
     try{
@@ -343,9 +354,9 @@ exports.deleteUsuario = async function (req, res) { //borro el usuario que le pa
         let my_id = req.params.usuarioId;
         let user = await UsuariosSchema.findByIdAndRemove(my_id);
         if(!user){
-            return res.status(404).send({message: 'user not found'})
+            return res.status(404).json('Usuario no encontrado');
         }else{
-            res.status(200).send({message:'User deleted successfully'})
+            res.status(200).json(`Usuario ${my_id} eliminado correctamente`);
         }
     }
     catch(err){

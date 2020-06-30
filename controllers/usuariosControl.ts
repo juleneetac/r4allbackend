@@ -265,12 +265,15 @@ exports.addAmigo = async function (req,res){
         let { _idUsuario, _idAmigo } = req.body;
         let check = await UsuariosSchema.findById(_idAmigo);
         if(check){
+            let nuevoamigo = await UsuariosSchema.findOne({ _id: _idAmigo }) //busco el jugador al que le subo la experiencia
             await UsuariosSchema.updateOne( {'_id': _idUsuario}, {$addToSet:{'amigos': req.body._idAmigo}}).then(async (data) => {
                 if(data.nModified == 1){
-                    res.status(201).json(`Usuario ${_idAmigo} añadido correctamente a tu lista de amigos`);
+                    //res.status(201).json(`Usuario ${_idAmigo} añadido correctamente a tu lista de amigos`);
+                    res.status(201).json(`Usuario ${nuevoamigo.username} añadido correctamente a tu lista de amigos`);
                 }
                 else{
-                    res.status(409).json(`El Usuario ${_idAmigo} ya está en tu lista de amigos`);
+                    //res.status(409).json(`El Usuario ${_idAmigo} ya está en tu lista de amigos`);
+                    res.status(409).json(`El Usuario ${nuevoamigo.username} ya está en tu lista de amigos`);
                 }
             });
         }
